@@ -1,0 +1,13 @@
+# 密钥绝不上传
+.env
+
+# 运行时数据库文件
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 向量模型（体积大、本地下载，见 README）
+models/

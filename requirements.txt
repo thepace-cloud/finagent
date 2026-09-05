@@ -1,0 +1,8 @@
+openai
+python-dotenv
+sentence-transformers
+numpy
+sqlalchemy
+redis
+mcp
+pymysql  # 仅在切真 MySQL 时需要（demo 用 SQLite 无需）
