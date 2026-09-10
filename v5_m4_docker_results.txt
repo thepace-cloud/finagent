@@ -1,0 +1,39 @@
+V5-M4 Docker compose 一键真库全链路 —— 验证记录（2026-09-07）
+========================================================
+
+一句话：docker compose up -d → FastAPI 服务连真 Redis + 真 MySQL，
+V4 时代「dict/SQLite 顶着跑」的降级口径，升级成「换 URL 即切真库」的一键落地。
+
+环境事实
+  - Docker Desktop 引擎本机默认不起（V4 时代老坎），本次手动拉起
+  - 直连 docker.io 超时（国内网络）→ 用 docker.m.daocloud.io 镜像代理拉
+    python:3.12-slim 后重打官方 tag，Dockerfile 保持干净不写死代理
+  - requirements 坑：openai 3.3.1 / mcp 2.1.1 的 httpx 依赖叫 httpx2 不是 httpx
+
+镜像策略
+  - CPU torch 先单独装（--index-url .../cpu）：默认源给 linux 拉 CUDA 版数 GB，
+    CPU-only 推理压到 ~2GB 级
+  - models/（4.4GB 本地模型）走 bind mount 不进镜像层（.dockerignore 挡）
+  - .env 只经 compose env_file 注入运行时，不进镜像层（密钥原则）
+
+冒烟（v5_smoke_http.py，跨进程真 HTTP，httpx trust_env=False 绕系统代理）
+  /health
+    200  backend=redis://redis:6379  db=mysql+pymysql://finagent:finagent@mysql:3306/finagent
+    （不再是 dict 降级 / sqlite——真库双后端）
+  RAG 第 1 轮「我想申请安居贷」         200 route=rag  [anju_loan P1] 引用合法
+  RAG 第 2 轮「它的首付比例和额度是多少」 200 route=rag  答安居贷 → Redis 记忆补全跨请求生效
+  analysis「贵州茅台的股价」           200 route=analysis  容器内 MCP 子进程 spawn 成功
+
+双写硬证据（进容器查）
+  Redis  keys：chat_history:s_http_1 / chat_history:s_http_2（含完整 JSON 消息）
+  MySQL  counts：users=1  conversations=2  messages=6（2 轮 + 1 轮 = 6，对上）
+  MySQL  内容：--default-character-set=utf8mb4 下中文完好（先前 ? 是 CLI 显示问题非存坏）
+
+设计要点（下次可考）
+  - 为什么服务名 redis/mysql 而不是 127.0.0.1：compose 网络里服务名 = DNS，
+    127.0.0.1 在容器里是容器自己
+  - depends_on + condition: service_healthy：MySQL 端口通 ≠ 能收 SQL，首次初始化
+    20~40s，用健康检查等「真能干活」而不是赌启动顺序
+  - 容器绑 0.0.0.0（Dockerfile ENV HOST），127.0.0.1 只在宿主机侧
+  - torch CPU-only / 模型 bind mount：镜像只背代码，重资产运行时挂载
+  - 引擎平时没起 / docker.io 直连超时：本机环境的两个真实约束，文档可说明就是加分

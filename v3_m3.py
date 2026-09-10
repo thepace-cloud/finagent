@@ -1,6 +1,6 @@
 """V3-M3: 检索 —— query 向量化 → 与全部 chunk 向量算余弦相似度 → top-k → 回查文本
 
-手写检索（不依赖 FAISS / Chroma 等向量库）。向量在 M2 已归一化
+手写检索（邪修纪律：无 FAISS / Chroma）。向量在 M2 已归一化
 → 余弦相似度 == 点积 == 一次矩阵乘算完所有 chunk。
 """
 import json

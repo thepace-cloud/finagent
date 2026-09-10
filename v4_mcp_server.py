@@ -1,12 +1,12 @@
 """V4-M3 MCP Server —— 一个财经数据 server，暴露 get_stock_info（极小范围，锁死）
 
-MCP 是什么：
+MCP 是什么（设计要点）：
   让"工具提供方"（server）按一套公开协议把能力暴露出去，"工具消费方"（client）
   可以动态发现（list_tools）并调用（call_tool）—— 不用提前在进程里 import 对方的函数。
   对比 Function Calling：那是在同一个进程里把函数注册给 LLM 硬编码调用；
   MCP 是把工具做成**标准协议服务**，跨进程、跨语言、可被发现。
 
-本 demo 数据是本地样例（生产接行情源），只做协议链路真实：
+本 demo 数据是本地样例（生产接行情源），只做协议链路真实——这是设计上的分寸：
 "工具用 MCP 协议暴露是真的，数据是样例是 Demo 取舍，不是假装接了行情。"
 """
 from mcp.server.mcpserver import MCPServer

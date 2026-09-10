@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinAgent · 财经问答</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: #eef1f5; display: flex; justify-content: center;
+  }
+  .app {
+    width: 100%; max-width: 760px; height: 100%;
+    display: flex; flex-direction: column; background: #fff;
+    box-shadow: 0 0 40px rgba(0,0,0,.06);
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid #e5e9f0; background: #fff;
+  }
+  .title { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px; background: #2563eb;
+    color: #fff; font-weight: 700; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  h1 { font-size: 17px; color: #1a2233; }
+  .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
+  .pill {
+    font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    background: #eef1f5; color: #8a94a6;
+  }
+  .pill.ok { background: #e8f7ee; color: #15803d; }
+  .pill.warn { background: #fef3e2; color: #b45309; }
+
+  main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { display: flex; }
+  .msg.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 82%; padding: 10px 14px; border-radius: 14px;
+    font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+  }
+  .msg.user .bubble { background: #2563eb; color: #fff; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: #f4f6f9; color: #1a2233; border-bottom-left-radius: 4px; }
+  .meta { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 500;
+  }
+  .badge.rag { background: #e0ecff; color: #1d4ed8; }
+  .badge.analysis { background: #f1e8ff; color: #7c3aed; }
+  .badge.retry { background: #fdecec; color: #b91c1c; }
+  .cite {
+    font-family: Consolas, monospace; font-size: 12px;
+    background: #e8f7ee; color: #15803d; border-radius: 4px; padding: 0 4px;
+  }
+  .dots::after { content: "…"; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+
+  .chips { display: flex; gap: 8px; padding: 0 20px 10px; flex-wrap: wrap; }
+  .chips button {
+    font-size: 12px; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid #d7dde8; background: #fff; color: #47546a; cursor: pointer;
+  }
+  .chips button:hover { border-color: #2563eb; color: #2563eb; }
+
+  footer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid #e5e9f0; }
+  footer input {
+    flex: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid #d7dde8;
+    font-size: 14px; outline: none;
+  }
+  footer input:focus { border-color: #2563eb; }
+  footer button {
+    padding: 0 22px; border: none; border-radius: 10px; background: #2563eb;
+    color: #fff; font-size: 14px; cursor: pointer;
+  }
+  footer button:disabled { background: #a8bde8; cursor: default; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="title">
+      <div class="logo">F</div>
+      <div>
+        <h1>FinAgent</h1>
+        <div class="sub">财经问答 Agent · RAG 检索 + 工具调用 + 记忆</div>
+      </div>
+    </div>
+    <div id="health" class="pill">连接中</div>
+  </header>
+
+  <main id="chat">
+    <div class="msg assistant">
+      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以查股票行情（如「贵州茅台的股价」）。</div>
+    </div>
+  </main>
+
+  <div class="chips" id="chips">
+    <button>安居贷的申请条件是什么？</button>
+    <button>它的首付比例和额度是多少？</button>
+    <button>贵州茅台的股价怎么样？</button>
+  </div>
+
+  <footer>
+    <input id="input" placeholder="输入问题，回车发送…" autocomplete="off">
+    <button id="send">发送</button>
+  </footer>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const USER = "demo_user";
+  const SESSION = "web_" + Date.now().toString(36);   // 每次打开页面 = 新会话（记忆在会话内生效）
+
+  // 健康状态：右上角显示真库/降级
+  fetch("/health").then(r => r.json()).then(h => {
+    const redis = (h.backend || "").startsWith("redis://");
+    const mysql = (h.db || "").includes("mysql");
+    const el = $("health");
+    el.textContent = (redis ? "Redis ✓  " : "内存降级  ") + (mysql ? "MySQL ✓" : "SQLite");
+    el.className = "pill " + (redis && mysql ? "ok" : "warn");
+  }).catch(() => {
+    $("health").textContent = "服务未连接";
+    $("health").className = "pill warn";
+  });
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // 渲染：**加粗** → <strong>，[anju_loan P2] → 绿色引用徽章
+  function render(text) {
+    let h = escapeHtml(text);
+    h = h.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    h = h.replace(/\[([a-z_]+ P\d+)\]/g, '<span class="cite">[$1]</span>');
+    return h;
+  }
+
+  function addMsg(role, html) {
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    div.innerHTML = '<div class="bubble">' + html + "</div>";
+    $("chat").appendChild(div);
+    $("chat").scrollTop = $("chat").scrollHeight;
+    return div;
+  }
+
+  let busy = false;
+  async function send(text) {
+    text = text.trim();
+    if (!text || busy) return;
+    busy = true; $("send").disabled = true;
+    addMsg("user", escapeHtml(text));
+    const pending = addMsg("assistant", '<span class="dots">思考中</span>');
+    try {
+      const r = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: USER, session_id: SESSION, message: text }),
+      });
+      const b = await r.json();
+      const badges =
+        '<span class="badge ' + b.route + '">' +
+        (b.route === "rag" ? "RAG 检索" : "工具调用") + "</span>" +
+        (b.attempts > 1 ? '<span class="badge retry">校验重试 ×' + (b.attempts - 1) + "</span>" : "");
+      pending.querySelector(".bubble").innerHTML = render(b.answer) +
+        '<div class="meta">' + badges + "</div>";
+    } catch (e) {
+      pending.querySelector(".bubble").textContent = "请求失败：" + e;
+    }
+    $("chat").scrollTop = $("chat").scrollHeight;
+    busy = false; $("send").disabled = false;
+  }
+
+  $("send").onclick = () => { send($("input").value); $("input").value = ""; };
+  $("input").onkeydown = e => {
+    if (e.key === "Enter") { send($("input").value); $("input").value = ""; }
+  };
+  $("chips").onclick = e => { if (e.target.tagName === "BUTTON") send(e.target.textContent); };
+</script>
+</body>
+</html>

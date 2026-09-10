@@ -1,78 +1,99 @@
-# FinAgent —— 手写的财经问答 Agent（V1→V4）
+# FinAgent —— 可审计的财经问答 Agent
 
-一个**从零手写、不套 Agent 框架**的财经智能问答系统：基于三类贷款产品（安居贷 / 乐享贷 / 兴旺贷）的带页码语料，回答产品规则时可**溯源到原文页码**、**跨轮记住用户**、并能通过 **MCP 调用外部财经数据工具**。
+一个从零构建的贷款客服 Agent：基于三份贷款产品说明书（安居贷 / 乐享贷 / 兴旺贷），回答利率、额度、罚息等业务问题。
 
-> 简历承诺的每一条都能在代码里找到：Git 逐里程碑提交，可审计 demo 输出见下文。
+核心设计目标只有一个——**答案可查证**：
 
----
+- 每句答案带 `[文档名 P页码]` 引用，引用由代码层白名单校验，编造即打回；
+- 语料里没有的问题，拒答而不是编造（宁拒不错）；
+- 每次改动用 18 题评测集回归验证，数字可复现。
 
-## 版本演进（每个里程碑一次 git commit）
+<!-- 演示 GIF 录制后插入此处：
+![demo](docs/demo.gif)
+-->
 
-| 版本 | 一句话 | 关键代码 |
+## 架构
+
+一条请求的一生：
+
+```mermaid
+flowchart LR
+    U["浏览器 / Web 聊天页"] -->|"POST /chat"| APP["FastAPI 服务<br>(无状态)"]
+    APP --> R{"Router<br>关键词分叉"}
+    R -->|"任务词：股价 / 月供"| AGENT["Analysis 路径<br>Agent 工具循环"]
+    R -->|"其他"| RAG["RAG 路径"]
+    RAG --> MEM["记忆补全<br>(本轮没点名产品<br>→ 从会话上文拼回)"]
+    MEM --> RETR["混合检索<br>向量 + BM25 → RRF 融合"]
+    RETR --> GEN["生成 + 引用标注"]
+    AGENT --> MCP["MCP Server<br>(子进程 stdio)"]
+    GEN --> GUARD["Guard 出口质检<br>不过 → 带反馈重试 1 次<br>→ 仍不过降级拒答"]
+    AGENT --> GUARD
+    GUARD --> DW["双写"]
+    DW --> REDIS[("Redis<br>热：会话记忆")]
+    DW --> MYSQL[("MySQL<br>冷：三表历史")]
+    APP --> RESP["返回 answer + route + attempts"]
+```
+
+## 评测（18 题，三层题型的双层计分）
+
+评测集分单块（答案在 1 个 chunk）/ 多块（答案跨 3 个 chunk）/ 零块（语料外，考拒答）三类；检索层先考「golden 是否全进 top-3」，达标题再考生成层引用校验。全量明细见 `v3_eval_results.txt`。
+
+| 指标 | 纯向量检索 | 混合检索（BM25 + RRF） |
 |---|---|---|
-| **V1** | 手写最小 ReAct 循环（Thought→Action→Observation），用 stop 序列截断防模型自问自答 | `react.py` |
-| **V2** | 原生 Tool Calling + **确定性分离**：两个财经计算工具（贷款期限溢价 / 等额本息月供）由确定性代码执行，模型只决定"调不调" | `m2b.py`、`tools.py` |
-| **V3** | RAG 问答 + **页级引用**：500 字分块/50 字重叠/页码映射 → 多语言向量化(384维) → top-k 检索 → LLM 生成强制 `[产品 P页码]` → **宽进严出白名单校验**防编页码 | `v3_m1~m4.py` |
-| **V4** | 系统集成：**Redis 三 key 分层记忆** + **SQLAlchemy 三表持久化** + **MCP 财经数据工具**，同一条对话可审计 | `v4_*.py` |
+| 检索命中率 | 11/16（69%） | **13/16（81%）** |
+| ├ 单块题 | 10/11 | **11/11** |
+| └ 多块题 | 1/5 | **2/5** |
+| 引用白名单校验 | 11/11 | **13/13**（零编造） |
+| 语料外拒答 | 2/2 | **2/2** |
 
-**V5（规划中）**：Task Router + Validator 受控编排收口，把 RAG/工具路径装进确定性边界。
+升级动机是实测出来的：纯向量存在**语义盲区**（用户问「打折优惠」，语料写「下浮」，换回原词查询相似度反而全场最低）和**稀释**（500 字长块里 80 字相关，整块向量被冲淡）。BM25 认字面、向量认语义，两路各召回 top-10 后用 RRF 融排名回 top-3——融合排名不融合分数，因为余弦有界而 BM25 无界。
 
----
+剩余未过的 3 题均为多块题，病因是稀释（块粒度问题，属于分块层，检索融合无法修复）——修复边界清晰，下一步方向是按语义小节切更细的块。
 
-## 目录
+## 版本演进
 
+每一版解决上一版暴露的问题：
+
+| 版本 | 解决什么 |
+|---|---|
+| V1 | ReAct 基础循环：LLM + 工具调用（查利率、算月供），步数上限防死循环 |
+| V2 | 结构化工具注册表 + 规范化输出，工具循环可控可审计 |
+| V3 | RAG 闭环：语料按页分块 → 向量检索 → 生成 → 引用硬校验；18 题评测集 + BM25/RRF 混合检索 |
+| V4 | 记忆与持久化：Redis 三 key 会话记忆 + MySQL 三表冷存储双写；MCP 工具接入 |
+| V5 | 服务化：FastAPI + 重试护栏 + 校验-重试-降级 Guard 链 + Docker compose 一键真库全链路 + Web 聊天页 |
+
+## 关键工程决策
+
+- **引用白名单校验（宽进严出）**：宽正则抓出答案里所有疑似引用，逐个比对必须精确落在本次检索命中的真实 `(文档, 页码)` 集合内——判据是「值在真实来源里」，不是「格式看着像」。黑名单式校验只查认得的格式，认不得的漏过。
+- **Guard 链：判据与机制解耦**：校验不过 → 失败原因注进 prompt 重试 1 次 → 仍不过降级拒答。RAG 路和工具路的判据不同，但「重试一次再降级」的机制复用同一套。重试必须带反馈——温度为 0 时输入不变输出就不变，不带反馈的重试只是把同一个答案再抄一遍。
+- **手写 BM25，零检索依赖**：中文无空格用字符二元组切词（零依赖的最小解），k1 词频饱和 / b 长度归一 / IDF 稀有词加权。每个细节自己讲得清楚。
+- **热冷双写**：Redis 管「这个会话刚聊了什么」（三 key：历史列表 / 用户画像 / 滚动摘要），MySQL 管「谁在什么时候说过什么」的关系查询（users / conversations / messages 三表，外键成树）。
+- **无状态服务**：重资源（向量模型、矩阵、BM25 索引、DB 连接）在 lifespan 启动时加载一次；会话状态住在 Redis/MySQL 里，服务可横向扩。
+
+## 运行
+
+### Docker（一键真库全链路）
+
+```bash
+# 1. 准备 .env（DeepSeek API key）
+echo "DEEPSEEK_API_KEY=sk-..." > .env
+
+# 2. 准备本地模型（bind mount，不进镜像）
+#    下载 paraphrase-multilingual-MiniLM-L12-v2 到 models/pmml12/（ModelScope 可取）
+
+# 3. 起服务：Redis + MySQL + App 三容器，健康检查就绪后自动接线
+docker compose up -d
+# 浏览器打开 http://127.0.0.1:8000
 ```
-├── llm.py                 # LLM 客户端（DeepSeek，OpenAI 兼容）
-├── react.py  m2b.py       # V1 ReAct / V2 工具调用
-├── chunks.json            # V3 分块语料（20 块，含页码映射）
-├── embeddings.json        # V3 向量库（chunk_id + 384 维向量）
-├── v3_m1.py ~ v3_m4.py    # V3 分块/向量化/检索/RAG 闭环
-├── v3_golden.json         # 评估集 golden 样例
-├── v4_store.py            # 存储抽象：真 Redis / dict 降级同接口
-├── v4_memory.py           # 记忆三 key：chat_history / profile / summary
-├── v4_db.py               # SQLAlchemy 三表 users/conversations/messages
-├── v4_mcp_server.py       # MCP Server：get_stock_info
-├── v4_mcp_client.py       # MCP Client：initialize→list_tools→call_tool
-├── v4_demo.py             # V4 集成 demo（一条会记忆的对话）
-├── m4_results.txt         # V3 跑分输出（含故意留的回归坏例）
-└── v4_demo_result.txt     # V4 集成 demo 输出（可审计）
-```
 
----
-
-## 怎么跑
-
-### 1. 依赖与密钥
+### 本地开发（无 Docker）
 
 ```bash
 pip install -r requirements.txt
-# 复制 .env.example 为 .env，填入 DeepSeek key
+python v5_app.py
+# 本机没有 Redis/MySQL 时自动降级为进程内 dict + SQLite，代码路径不变
 ```
 
-### 2. 向量模型（本仓库不含，按 README 下载）
+## 技术栈
 
-V3/V4 运行时加载本地向量模型（多语言 MiniLM，384 维）。从 ModelScope 下载
-`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` 到 `models/pmml12/`，
-或重跑 `v3_m2.py` 用你选的模型重建 `embeddings.json`（同时需改 `v3_m4.py` 的 `MODEL_PATH`）。
-
-### 3. 复现
-
-```bash
-python v3_m4.py    # RAG 闭环四问 → 写 m4_results.txt
-python v4_demo.py  # V4 集成：一条跨轮对话 → 写 v4_demo_result.txt
-```
-
----
-
-## 诚实的技术边界
-
-- **V3 检索是纯向量 top-k**（`V @ q` 点积）。BM25 双路 + RRF 融合是"为什么纯向量不够"的演进方向，尚未实现——评估集里留了回归探针（见 `v3_golden.json` 的 g05）。
-- **V4 记忆/持久化按生产语义真写**（`redis-py` / SQLAlchemy），demo 环境无 Redis/MySQL 服务时**同接口降级**为进程内 dict / SQLite——接口一行不省，分别设 `REDIS_URL` / `DATABASE_URL` 即切真库。
-- **MCP demo 数据是本地样例**，协议链路真实（spawn server → 握手 → 发现 → 调用）；生产接行情 API。
-
----
-
-## 演示亮点（v4_demo_result.txt）
-
-一条跨 4 轮对话同时验证：画像抽取（`profile` 增量写）→ RAG 引用回答 → MCP 查行情 →
-**跨轮指代消解**——第 2 问「那利率多少」没点名产品，靠记忆补全检索词命中利率块，答出首套 3.95% + 期限溢价，全程引用通过白名单校验、热冷双写可核对。
+Python · FastAPI · DeepSeek API · sentence-transformers · 手写 BM25 + RRF · Redis · MySQL / SQLAlchemy · MCP · Docker Compose

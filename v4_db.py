@@ -1,16 +1,16 @@
 """V4-M2 极简 MySQL —— 结构化冷存储 users / conversations / messages 三张表
 
-Redis（热）与 MySQL（冷）的分工——按数据模型选型：
+Redis（热）与 MySQL（冷）的分工（设计要点：数据模型匹配理由）：
   Redis 键值高速，但答不了"某用户最近 10 段会话"这种关系查询；
   关系库用外键把 user → conversation → message 串成树，回答"谁在什么时候说过什么"。
   所以：会话语义结构存 MySQL（冷、可查、跨会话），会话高频存取走 Redis（热、快）。
   写入是双写（编排层同时写两端），读优先 Redis，Redis 没有才回源 MySQL——
-  一句话：热数据 Redis、结构化数据 MySQL，各用所长。
+  设计口径一句话：热数据 Redis、结构化数据 MySQL，各用所长。
 
-边界：三张表即可，不做索引优化 / 分库 / 迁移。
+边界（路线图锁死）：三张表即可，不做索引优化 / 分库 / 迁移。
 demo 环境没有 MySQL 服务 → DATABASE_URL 默认 sqlite:///finagent.db 顶着跑；
 SQLAlchemy engine 抽象下，换 mysql+pymysql://user:pass@host:3306/finagent 就是真 MySQL，
-业务代码一行不用改——engine 这层把"换库"变成了换一个 URL。
+业务代码一行不用改（设计要点：engine 一层把"换库"变成换一个 URL）。
 """
 import os
 from datetime import datetime, timezone

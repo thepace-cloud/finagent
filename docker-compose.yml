@@ -1,0 +1,53 @@
+# V5-M4 一键真库全链路 —— docker compose up -d 后：
+#   app(8000) → redis(热记忆) + mysql(冷结构化) + 容器内 MCP 子进程
+#
+# 设计要点：
+#  - 服务名即 DNS：app 连 redis://redis:6379 不是 127.0.0.1——compose 自带网络里，
+#    服务名解析到对方容器 IP；127.0.0.1 在容器里是容器自己
+#  - depends_on + condition: service_healthy：MySQL 端口通了 ≠ 能收 SQL，
+#    首次初始化要 20~40s——用健康检查等「真能干活」再起 app，而不是赌启动顺序
+#  - mysql_data 具名卷：数据活在卷里，compose down 不丢（down -v 才删）
+#  - .env 不进镜像（.dockerignore），只在运行时经 env_file 注入——密钥原则
+services:
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: finagent
+      MYSQL_USER: finagent
+      MYSQL_PASSWORD: finagent
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpw"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+  app:
+    build: .
+    env_file: .env                  # DEEPSEEK_API_KEY 只进运行时环境
+    environment:
+      REDIS_URL: redis://redis:6379          # 换 URL 即切真库——V4 铺的路在这里兑现
+      DATABASE_URL: mysql+pymysql://finagent:finagent@mysql:3306/finagent
+    volumes:
+      - ./models:/app/models        # 4.4GB 模型 bind mount，镜像不背
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

@@ -208,7 +208,7 @@ tool_schemas = [
 
 max_steps = 8
 
-# 换一句会触发 search 的提问（用户问利率，模型应该调 search_loan_rates）
+# 换一句会触发 search 的话术（用户问利率，模型应该调 search_loan_rates）
 messages = [{"role": "user", "content": "30 万、3 年期个人消费贷，月供和总利息多少？"}]
 
 # ────────────────────────────────────────────────────────────

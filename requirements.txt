@@ -1,8 +1,11 @@
-openai
-python-dotenv
-sentence-transformers
-numpy
-sqlalchemy
-redis
-mcp
-pymysql  # 仅在切真 MySQL 时需要（demo 用 SQLite 无需）
+fastapi==0.141.1
+uvicorn==0.52.1
+sentence-transformers==6.0.1
+numpy==2.5.2
+redis==8.1.0
+SQLAlchemy==2.0.51
+PyMySQL==1.2.0
+mcp==2.1.1
+openai==3.3.1
+httpx2==2.10.0
+python-dotenv==1.2.2
