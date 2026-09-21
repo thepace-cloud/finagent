@@ -76,6 +76,9 @@
     color: #fff; font-size: 14px; cursor: pointer;
   }
   footer button:disabled { background: #a8bde8; cursor: default; }
+  .msg.assistant .bubble.refused {
+    background: #fdecec; color: #b91c1c; border-bottom-left-radius: 4px;
+  }
   @media (max-width: 640px) {
     .bubble { max-width: 92%; }
     footer input { font-size: 16px; }
@@ -173,6 +176,9 @@
         (b.attempts > 1 ? '<span class="badge retry">校验重试 ×' + (b.attempts - 1) + "</span>" : "");
       pending.querySelector(".bubble").innerHTML = render(b.answer) +
         '<div class="meta">' + badges + "</div>";
+      if (b.answer.startsWith("抱歉，这条回答未通过出口校验")) {
+        pending.querySelector(".bubble").classList.add("refused");
+      }
     } catch (e) {
       pending.querySelector(".bubble").textContent = "请求失败：" + e;
     }
