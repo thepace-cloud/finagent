@@ -100,6 +100,20 @@ def metrics():
     return snapshot()
 
 
+@app.get("/cite")
+def cite(doc: str, page: int):
+    """引用点击查原文：返回该 (doc, page) 下的全部 chunk 文本。
+
+    前端引用面板的数据源。纯内存过滤（chunk 才 20 条），不值得上检索；
+    doc/page 由 URL 参数直接给出，FastAPI 自动做类型转换。
+    """
+    chunks = [c for c in _state["chunk_by_id"].values()
+              if c["company"] == doc and c["page"] == page]
+    return {"doc": doc, "page": page,
+            "chunks": [{"chunk_id": c["chunk_id"], "text": c["text"]}
+                       for c in chunks]}
+
+
 @app.get("/")
 def index():
     """最简聊天页（static/index.html）——单文件零构建，demo / 录 GIF 用。"""
