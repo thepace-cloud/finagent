@@ -76,6 +76,12 @@
     color: #fff; font-size: 14px; cursor: pointer;
   }
   footer button:disabled { background: #a8bde8; cursor: default; }
+  @media (max-width: 640px) {
+    .bubble { max-width: 92%; }
+    footer input { font-size: 16px; }
+    footer { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+
+  }
 </style>
 </head>
 <body>
