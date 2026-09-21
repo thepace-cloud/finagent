@@ -3,10 +3,10 @@
 为什么要有这层：
   记忆层（v4_memory）只关心"往 key 里 push 一条 / 读最近 N 条 / 写画像字段"，
   不关心背后是 Redis 还是内存。接口命令语义对齐 redis-py（rpush/lrange/ltrim/hset...），
-  这样本机没有 Redis 服务时降级成 dict 跑通 demo，设计口径 = 代码按真 Redis 写、
+  这样本机没有 Redis 服务时降级成 dict 跑通 demo，面试口径 = 代码按真 Redis 写、
   生产环境一行 REDIS_URL 切过去，不需要改记忆层一行。
 
-Redis 命令对照（冷知识可复盘）：
+Redis 命令对照（冷知识可拷问）：
   rpush  往 LIST 尾部塞元素        lrange(key, 0, -1) 取整条
   ltrim  只保留区间内的元素        hset/hgetall 管 HASH（画像就是一条 HASH）
   set/get 管 STRING（滚动摘要就是一条 STRING）
@@ -59,7 +59,7 @@ class RedisStore(Store):
 class DictStore(Store):
     """进程内降级实现：命令语义与 Redis 一致，只是数据不跨进程、进程结束即失。
 
-    文档可说明：这是"接口真、引擎换"，不是假装用了 Redis——
+    面试能讲清楚：这是"接口真、引擎换"，不是假装用了 Redis——
     demo 环境没有服务器，逻辑（三 key 分层、裁剪、滚动）一行没省。
     """
 

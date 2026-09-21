@@ -1,13 +1,13 @@
 # V5-M4 一键真库全链路 —— docker compose up -d 后：
 #   app(8000) → redis(热记忆) + mysql(冷结构化) + 容器内 MCP 子进程
 #
-# 设计要点：
+# 拷问主线：
 #  - 服务名即 DNS：app 连 redis://redis:6379 不是 127.0.0.1——compose 自带网络里，
 #    服务名解析到对方容器 IP；127.0.0.1 在容器里是容器自己
 #  - depends_on + condition: service_healthy：MySQL 端口通了 ≠ 能收 SQL，
 #    首次初始化要 20~40s——用健康检查等「真能干活」再起 app，而不是赌启动顺序
 #  - mysql_data 具名卷：数据活在卷里，compose down 不丢（down -v 才删）
-#  - .env 不进镜像（.dockerignore），只在运行时经 env_file 注入——密钥原则
+#  - .env 不进镜像（.dockerignore），只在运行时经 env_file 注入——密钥红线
 services:
   redis:
     image: redis:7-alpine

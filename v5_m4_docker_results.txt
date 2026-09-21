@@ -14,7 +14,7 @@ V4 时代「dict/SQLite 顶着跑」的降级口径，升级成「换 URL 即切
   - CPU torch 先单独装（--index-url .../cpu）：默认源给 linux 拉 CUDA 版数 GB，
     CPU-only 推理压到 ~2GB 级
   - models/（4.4GB 本地模型）走 bind mount 不进镜像层（.dockerignore 挡）
-  - .env 只经 compose env_file 注入运行时，不进镜像层（密钥原则）
+  - .env 只经 compose env_file 注入运行时，不进镜像层（密钥红线）
 
 冒烟（v5_smoke_http.py，跨进程真 HTTP，httpx trust_env=False 绕系统代理）
   /health
@@ -29,11 +29,11 @@ V4 时代「dict/SQLite 顶着跑」的降级口径，升级成「换 URL 即切
   MySQL  counts：users=1  conversations=2  messages=6（2 轮 + 1 轮 = 6，对上）
   MySQL  内容：--default-character-set=utf8mb4 下中文完好（先前 ? 是 CLI 显示问题非存坏）
 
-设计要点（下次可考）
+拷问主线（下次可考）
   - 为什么服务名 redis/mysql 而不是 127.0.0.1：compose 网络里服务名 = DNS，
     127.0.0.1 在容器里是容器自己
   - depends_on + condition: service_healthy：MySQL 端口通 ≠ 能收 SQL，首次初始化
     20~40s，用健康检查等「真能干活」而不是赌启动顺序
   - 容器绑 0.0.0.0（Dockerfile ENV HOST），127.0.0.1 只在宿主机侧
   - torch CPU-only / 模型 bind mount：镜像只背代码，重资产运行时挂载
-  - 引擎平时没起 / docker.io 直连超时：本机环境的两个真实约束，文档可说明就是加分
+  - 引擎平时没起 / docker.io 直连超时：本机环境的两个真实约束，面试能讲就是加分

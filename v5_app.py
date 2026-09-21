@@ -1,6 +1,6 @@
 """V5-M3 FastAPI 服务 —— 把 Router / 路径 / Validator 焊成一个 HTTP 服务
 
-架构（一条请求的一生，设计要点）：
+架构（一条请求的一生，拷问主线）：
   POST /chat {user_id, session_id, message}
     → logging（谁在问）
     → route() 确定性分叉（M1）
@@ -9,7 +9,7 @@
     → run_with_guard 出口质检（M2）：不过带反馈重试 1 次 → 仍不过降级
     → 双写（热 memory + 冷 FinDB）→ 返回 {route, answer, attempts, ...}
 
-设计决策（设计要点）：
+设计决策（拷问点）：
   - 端点用普通 def 不用 async def：整条链路是同步的，MCP 客户端里
     asyncio.run 不可重入——async 世界被同步外壳隔离后，服务层保持同步最诚实
   - 重资源（向量模型/矩阵/Redis/FinDB）在 lifespan 里起服务时加载一次，

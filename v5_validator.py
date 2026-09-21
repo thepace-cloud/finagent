@@ -1,11 +1,11 @@
 """V5-M2 Validator —— 路径出口的确定性质检：不过 → 带反馈重试一次 → 降级拒答
 
-受控编排（设计要点）：Router 守入口，Validator 守出口，中间才是 Agent 的地盘。
+受控编排（拷问主线）：Router 守入口，Validator 守出口，中间才是 Agent 的地盘。
 为什么 Validator 也是确定性代码、不是让另一个 LLM 当裁判：
   规则校验零成本、可单测、可复现；LLM-judge 每次判定自己要烧 token 且会飘——
   裁判自己会犯错，就等于没人守门。LLM-as-judge 是谈资，不是这里的方案。
 
-设计决策（设计要点）：
+设计决策（拷问点）：
   - 校验器签名统一 validate(answer) -> list[str]（问题列表，空 = 通过）
     ——统一签名，编排层才能拿同一个 run_with_guard 通用处理所有路径
   - RAG 路径直接复用 V3 的 check_citations（旧资产进新边界，不重写）
