@@ -2,7 +2,7 @@
 
 架构（一条请求的一生，拷问主线）：
   POST /chat {user_id, session_id, message}
-    → logging（谁在问）
+    → 可观测性开路：trace id 贯穿全程（一条请求的一生串得起来）
     → route() 确定性分叉（M1）
     → rag 路径：记忆补全 query → 混合检索（M6：BM25+RRF）→ 生成（套重试护栏）
       analysis 路径：agent_turn 工具循环（M2 之外的第三个模块 v5_analysis）
@@ -20,6 +20,7 @@
     服务要多会话，写入必须带请求自己的 session_id
 """
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -39,7 +40,9 @@ from v4_store import make_store
 from v5_analysis import run_analysis
 from v5_retry import with_retry
 from v5_router import route
-from v5_validator import run_with_guard, validate_analysis, validate_rag_factory
+from v5_observability import inc, new_trace_id, observe, snapshot
+from v5_validator import (DEGRADED_ANSWER, run_with_guard, validate_analysis,
+                          validate_rag_factory)
 
 logging.basicConfig(
     level=LOG_LEVEL,
@@ -87,6 +90,16 @@ def health():
             "db": _state["db"].url if "db" in _state else None}
 
 
+@app.get("/metrics")
+def metrics():
+    """评测看板数据源：总请求/分路占比/护栏出口三档/延迟，进程内计数。
+
+    重启清零是特性不是缺陷：它度量「本进程活着期间」的行为，一次评测窗口
+    正合适；跨天的运营数字归 /stats（MySQL）管，两层数据两种归宿。
+    """
+    return snapshot()
+
+
 @app.get("/")
 def index():
     """最简聊天页（static/index.html）——单文件零构建，demo / 录 GIF 用。"""
@@ -117,8 +130,10 @@ def _rag_gen_factory(query: str, hits):
 
 @app.post("/chat")
 def chat_endpoint(req: ChatRequest):
-    logger.info("[req] user=%s session=%s msg=%r",
-                req.user_id, req.session_id, req.message)
+    trace_id = new_trace_id()
+    t0 = time.perf_counter()
+    logger.info("[trace=%s][req] user=%s session=%s msg=%r",
+                trace_id, req.user_id, req.session_id, req.message)
 
     memory = Memory(_state["store"], session_id=req.session_id,
                     user_id=req.user_id)
@@ -127,7 +142,9 @@ def chat_endpoint(req: ChatRequest):
 
     # ── M1：入口确定性分叉 ──
     route_name, hit = route(req.message)
-    logger.info("[route] %s hit=%r", route_name, hit)
+    logger.info("[trace=%s][route] %s hit=%r", trace_id, route_name, hit)
+    inc("chat.total")
+    inc("chat." + route_name)      # chat.rag / chat.analysis：分路占比
 
     if route_name == "analysis":
         gen = lambda feedback: run_analysis(   # noqa: E731
@@ -135,7 +152,7 @@ def chat_endpoint(req: ChatRequest):
         validate = validate_analysis
     else:
         q = _query_with_memory(req.message, memory)
-        logger.info("[memory] 补全 query=%r", q)
+        logger.info("[trace=%s][memory] 补全 query=%r", trace_id, q)
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)
         gen = _rag_gen_factory(q, hits)
@@ -143,7 +160,15 @@ def chat_endpoint(req: ChatRequest):
 
     # ── M2：出口质检（不过→带反馈重试1次→降级）──
     answer, problems, attempts = run_with_guard(gen, validate)
-    logger.info("[guard] attempts=%d problems=%s", attempts, problems)
+    logger.info("[trace=%s][guard] attempts=%d problems=%s",
+                trace_id, attempts, problems)
+    # 护栏出口三档：一次过 / 重试后过 / 降级拒答——评测看板的三根柱
+    if answer == DEGRADED_ANSWER:
+        inc("guard.degraded")
+    elif attempts > 1:
+        inc("guard.retried")
+    else:
+        inc("guard.first_pass")
 
     # ── 双写（热 + 冷），带的是本请求自己的 session_id ──
     memory.add_message("user", req.message)
@@ -151,9 +176,10 @@ def chat_endpoint(req: ChatRequest):
     _state["db"].append_message(req.session_id, "user", req.message)
     _state["db"].append_message(req.session_id, "assistant", answer)
 
+    observe("chat.seconds", time.perf_counter() - t0)
     return {"route": route_name, "matched": hit, "answer": answer,
             "attempts": attempts, "problems": problems,
-            "backend": _state["backend"]}
+            "backend": _state["backend"], "trace_id": trace_id}
 
 
 if __name__ == "__main__":
