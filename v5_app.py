@@ -19,16 +19,17 @@
   - 为什么不用 v4_demo 的 store_turn：它写死了模块级 SESSION_ID，
     服务要多会话，写入必须带请求自己的 session_id
 """
+import json
 import logging
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 from config import HOST, LOG_LEVEL, LLM_RETRIES, LLM_RETRY_DELAY, PORT
-from llm import chat
+from llm import chat, chat_stream
 from sentence_transformers import SentenceTransformer
 from v3_hybrid import BM25, hybrid_search
 from v3_m3 import load
@@ -41,7 +42,8 @@ from v5_analysis import run_analysis
 from v5_retry import with_retry
 from v5_router import route
 from v5_observability import inc, new_trace_id, observe, snapshot
-from v5_validator import (DEGRADED_ANSWER, run_with_guard, validate_analysis,
+from v5_validator import (DEGRADED_ANSWER, MAX_RETRIES, feedback_text,
+                          run_with_guard, validate_analysis,
                           validate_rag_factory)
 
 logging.basicConfig(
@@ -128,17 +130,20 @@ def _query_with_memory(user_msg: str, memory: Memory) -> str:
     return f"{user_msg} {hit}" if hit else user_msg
 
 
+def _rag_messages(query: str, hits, feedback=None) -> list[dict]:
+    """RAG 路径的 prompt 组装（流式/非流式共用同一配方，防两处漂移）。"""
+    context = build_context(hits, _state["chunk_by_id"])
+    note = f"\n\n（上轮校验反馈：{feedback}）" if feedback else ""
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": f"context:\n{context}\n\n问题：{query}{note}"},
+    ]
+
+
 def _rag_gen_factory(query: str, hits):
     """造 RAG 路径的生成器：feedback 拼进 prompt = 重试带反馈的落点。"""
-    context = build_context(hits, _state["chunk_by_id"])
-
     def gen(feedback):
-        note = f"\n\n（上轮校验反馈：{feedback}）" if feedback else ""
-        return chat_safe([
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"context:\n{context}\n\n问题：{query}{note}"},
-        ])
-
+        return chat_safe(_rag_messages(query, hits, feedback))
     return gen
 
 
@@ -194,6 +199,109 @@ def chat_endpoint(req: ChatRequest):
     return {"route": route_name, "matched": hit, "answer": answer,
             "attempts": attempts, "problems": problems,
             "backend": _state["backend"], "trace_id": trace_id}
+
+
+def _sse(obj: dict) -> str:
+    """一条 SSE 事件：`data: 单行 JSON` + 空行 = 协议规定的消息分隔。"""
+    return "data: " + json.dumps(obj, ensure_ascii=False) + "\n\n"
+
+
+@app.post("/chat/stream")
+def chat_stream_endpoint(req: ChatRequest):
+    """流式版 /chat：SSE 逐段外推，前端边收边上屏（打字机）。
+
+    双端点并存的理由：/chat 契约稳定（评测/联调用），/chat/stream 管体验；
+    护栏、双写、可观测性与 /chat 完全对齐，只是运输方式换了。
+
+    为什么 POST + fetch 而不是原生 EventSource：EventSource 只支持 GET
+    且带不了 JSON body（SSE 的历史包袱），fetch 流式读是业界主流同款。
+
+    流式 × 护栏（拷问点）：第一遍边流边攒、攒完校验；不过 → retry 事件
+    让前端清屏，带反馈重发第二遍（非流式一段 delta，重试是罕见路径）；
+    仍不过 → refused 事件带降级文案，前端换红卡。宁拒不错不因流式打折。
+    """
+    trace_id = new_trace_id()
+    t0 = time.perf_counter()
+    logger.info("[trace=%s][req] stream user=%s msg=%r",
+                trace_id, req.user_id, req.message)
+
+    memory = Memory(_state["store"], session_id=req.session_id,
+                    user_id=req.user_id)
+    _state["db"].ensure_user(req.user_id)
+    _state["db"].ensure_conversation(req.session_id, req.user_id)
+
+    route_name, hit = route(req.message)
+    logger.info("[trace=%s][route] %s hit=%r (stream)", trace_id, route_name, hit)
+    inc("chat.total")
+    inc("chat." + route_name)
+
+    if route_name == "analysis":
+        validate = validate_analysis
+    else:
+        q = _query_with_memory(req.message, memory)
+        logger.info("[trace=%s][memory] 补全 query=%r (stream)", trace_id, q)
+        hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
+                             _state["bm25"], q, k=K)
+        validate = validate_rag_factory(hits, _state["chunk_by_id"])
+
+    def events():
+        # 事件契约：meta → delta×N → [retry → delta×N] → [refused] → done
+        yield _sse({"type": "meta", "route": route_name, "trace_id": trace_id})
+
+        feedback = None
+        problems: list = []
+        answer = ""
+        for attempts in range(1, MAX_RETRIES + 2):     # 与 run_with_guard 同一条纪律
+            pieces = []
+            if route_name == "analysis":
+                # 工具循环是多轮结构化调用，中间没有可流的文本 → 整段一个 delta
+                text = run_analysis(
+                    req.message + (f"\n（上轮校验反馈：{feedback}）" if feedback else ""))
+                pieces = [text]
+                yield _sse({"type": "delta", "text": text})
+            elif attempts == 1:
+                # 首发：流式边发边攒
+                for piece in chat_stream(_rag_messages(q, hits)):
+                    pieces.append(piece)
+                    yield _sse({"type": "delta", "text": piece})
+            else:
+                # 重试：罕见路径，非流式一把梭（前端已在 retry 事件时清屏）
+                text = chat_safe(_rag_messages(q, hits, feedback))
+                pieces = [text]
+                yield _sse({"type": "delta", "text": text})
+            answer = "".join(pieces)
+            problems = validate(answer)
+            if not problems:
+                break
+            if attempts <= MAX_RETRIES:                # 还有重试名额才预告重试
+                yield _sse({"type": "retry",
+                            "problems": [str(p) for p in problems]})
+                feedback = feedback_text(problems)
+
+        refused = bool(problems)
+        if refused:
+            answer = DEGRADED_ANSWER
+            yield _sse({"type": "refused", "text": answer,
+                        "problems": [str(p) for p in problems]})
+        logger.info("[trace=%s][guard] stream attempts=%d refused=%s problems=%s",
+                    trace_id, attempts, refused, problems)
+
+        # 收尾三件事与 /chat 完全一致：护栏计数 → 双写 → 计时
+        if refused:
+            inc("guard.degraded")
+        elif attempts > 1:
+            inc("guard.retried")
+        else:
+            inc("guard.first_pass")
+        memory.add_message("user", req.message)
+        memory.add_message("assistant", answer)
+        _state["db"].append_message(req.session_id, "user", req.message)
+        _state["db"].append_message(req.session_id, "assistant", answer)
+        observe("chat.seconds", time.perf_counter() - t0)
+        yield _sse({"type": "done", "attempts": attempts, "refused": refused,
+                    "route": route_name})
+
+    return StreamingResponse(events(), media_type="text/event-stream")
 
 
 if __name__ == "__main__":

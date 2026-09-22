@@ -25,3 +25,22 @@ def chat(messages: list[dict], stop: list[str] | None = None) -> str:
         temperature=0.0,
     )
     return resp.choices[0].message.content
+
+
+def chat_stream(messages: list[dict]):
+    """流式版 chat：模型每想出一段就 yield 一段（/chat/stream 的水源）。
+
+    为什么不给它套 with_retry：一个函数只背一种保险——
+    质量护栏归 Validator 管（攒完再校验），网络重试归非流式 chat_safe 管；
+    流式首答要的是"立刻见字"，断了让前端报错即可，半截流重试反而画蛇添足。
+    """
+    resp = client.chat.completions.create(
+        model=os.getenv("DEEPSEEK_MODEL"),
+        messages=messages,
+        temperature=0.0,
+        stream=True,
+    )
+    for chunk in resp:
+        piece = chunk.choices[0].delta.content
+        if piece:                       # keep-alive 等空块直接跳过
+            yield piece

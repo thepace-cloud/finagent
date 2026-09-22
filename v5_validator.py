@@ -49,6 +49,12 @@ def validate_analysis(answer: str) -> list:
     return problems
 
 
+def feedback_text(problems) -> str:
+    """把问题列表变成回喂给模型的反馈话术（流式/非流式端点共用，防两处漂移）。"""
+    return ("上次回答未通过出口校验：" + "；".join(str(p) for p in problems)
+            + "。请只基于给定资料/工具结果重新生成，不要编造。")
+
+
 def run_with_guard(gen, validate, max_retries: int = MAX_RETRIES):
     """出口守卫循环：生成 → 校验 → 不过带反馈重试 → 仍不过 → 降级。
 
@@ -63,8 +69,7 @@ def run_with_guard(gen, validate, max_retries: int = MAX_RETRIES):
         problems = validate(answer)
         if not problems:
             return answer, [], attempt
-        feedback = ("上次回答未通过出口校验：" + "；".join(str(p) for p in problems)
-                    + "。请只基于给定资料/工具结果重新生成，不要编造。")
+        feedback = feedback_text(problems)
     return DEGRADED_ANSWER, problems, max_retries + 1
 
 
