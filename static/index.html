@@ -54,7 +54,28 @@
   .cite {
     font-family: Consolas, monospace; font-size: 12px;
     background: #e8f7ee; color: #15803d; border-radius: 4px; padding: 0 4px;
+    cursor: pointer;
   }
+  .cite-panel {
+    position: fixed; top: 0; right: 0; height: 100%;
+    width: 360px; max-width: 90vw;
+    background: #fff; box-shadow: -6px 0 24px rgba(0,0,0,.12);
+    transform: translateX(100%);                        /* 藏到右门外 */
+    transition: transform .25s ease;
+    display: flex; flex-direction: column;
+    z-index: 10;
+  }
+  .cite-panel.open { transform: translateX(0%); }      /* 滑回门内 */
+  .cite-panel-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px; border-bottom: 1px solid #e5e9f0; font-weight: 600;
+  }
+  .cite-panel-body {
+    padding: 16px; overflow-y: auto; font-size: 13px;
+    line-height: 1.8; white-space: pre-wrap;
+  }
+  #citeClose { border: none; background: none; font-size: 16px; cursor: pointer; color: #8a94a6; }
+
   .dots::after { content: "…"; animation: blink 1s infinite; }
   @keyframes blink { 50% { opacity: .2; } }
 
@@ -102,7 +123,7 @@
 
   <main id="chat">
     <div class="msg assistant">
-      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以查股票行情（如「贵州茅台的股价」）。</div>
+      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以查股票行情（如「贵州茅台的股价」）。点击试试：<span class="cite">[anju_loan P1]</span></div>
     </div>
   </main>
 
@@ -116,6 +137,13 @@
     <input id="input" placeholder="输入问题，回车发送…" autocomplete="off">
     <button id="send">发送</button>
   </footer>
+<div id="citePanel" class="cite-panel">
+  <div class="cite-panel-head">
+    <span id="citeTitle">原文</span>
+    <button id="citeClose">✕</button>
+  </div>
+  <div id="citeBody" class="cite-panel-body">（原文将显示在这里）</div>
+</div>
 </div>
 
 <script>
@@ -187,10 +215,33 @@
   }
 
   $("send").onclick = () => { send($("input").value); $("input").value = ""; };
+  $("citeClose").onclick = () => { $("citePanel").classList.remove("open"); };
   $("input").onkeydown = e => {
     if (e.key === "Enter") { send($("input").value); $("input").value = ""; }
   };
   $("chips").onclick = e => { if (e.target.tagName === "BUTTON") send(e.target.textContent); };
+  // Step 5：点徽章 → 从后端 /cite 取真原文装进面板
+  async function openCite(badge) {
+    const m = badge.textContent.match(/\[([a-z_]+) P(\d+)\]/);   // [anju_loan P1] → 拆出 doc、page
+    if (!m) return;
+    const doc = m[1], page = m[2];
+    $("citePanel").classList.add("open");          // 先开门：用户立刻看到响应
+    $("citeTitle").textContent = `[${doc} P${page}]`;
+    $("citeBody").textContent = "加载原文中…";      // 网络往返期间给个占位
+    try {
+      const r = await fetch(`/cite?doc=${doc}&page=${page}`);   // 你后端写的接口
+      const b = await r.json();
+      $("citeBody").textContent = b.chunks.length
+        ? b.chunks.map(c => c.text).join("\n\n————\n\n")       // 多块用分隔线拼
+        : "未找到对应原文。";
+    } catch (e) {
+      $("citeBody").textContent = "原文加载失败：" + e;
+    }
+  }
+
+  $("chat").addEventListener("click", e => {
+    if (e.target.classList.contains("cite")) openCite(e.target);
+  });
 </script>
 </body>
 </html>
