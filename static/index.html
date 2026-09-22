@@ -190,27 +190,56 @@
     if (!text || busy) return;
     busy = true; $("send").disabled = true;
     addMsg("user", escapeHtml(text));
-    const pending = addMsg("assistant", '<span class="dots">思考中</span>');
+    const bubble = addMsg("assistant", '<span class="dots">思考中</span>')
+      .querySelector(".bubble");
+    const paint = () => { $("chat").scrollTop = $("chat").scrollHeight; };
     try {
-      const r = await fetch("/chat", {
+      const r = await fetch("/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: USER, session_id: SESSION, message: text }),
       });
-      const b = await r.json();
-      const badges =
-        '<span class="badge ' + b.route + '">' +
-        (b.route === "rag" ? "RAG 检索" : "工具调用") + "</span>" +
-        (b.attempts > 1 ? '<span class="badge retry">校验重试 ×' + (b.attempts - 1) + "</span>" : "");
-      pending.querySelector(".bubble").innerHTML = render(b.answer) +
-        '<div class="meta">' + badges + "</div>";
-      if (b.answer.startsWith("抱歉，这条回答未通过出口校验")) {
-        pending.querySelector(".bubble").classList.add("refused");
+      const reader = r.body.getReader();     // ① 吸管
+      const dec = new TextDecoder();         // ② 翻译官
+      let buf = "", full = "", route = "", refused = false;
+      while (true) {
+        const { done, value } = await reader.read();   // ③ 吸一口（没水就冻结等）
+        if (done) break;
+        buf += dec.decode(value);            // 这一口倒进缓冲桌
+        let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {       // 桌上凑齐几封拆几封
+          const line = buf.slice(0, i);      // 取出一封（切在封口空行处）
+          buf = buf.slice(i + 2);            // 半封的留在桌上等下一口
+          if (!line.startsWith("data: ")) continue;
+          const ev = JSON.parse(line.slice(6));        // ④ 撕封皮读信
+          if (ev.type === "delta") {
+            full += ev.text;                 // 信里的字并进全文
+            bubble.textContent = full;       // ⑤ 上屏——打字机！
+            paint();
+          } else if (ev.type === "meta") {
+            route = ev.route;                // 第一封：本趟走哪条路
+          } else if (ev.type === "retry") {
+            full = "";                       // 这版作废：清屏，重新流
+            bubble.innerHTML = '<span class="dots">校验未过，重试中</span>';
+          } else if (ev.type === "refused") {
+            full = ev.text; refused = true;  // 降级文案（后端连文案都给了）
+            bubble.textContent = full;
+          } else if (ev.type === "done") {
+            // 终稿化装：流式期间素颜文字，此刻上妆（加粗/引用徽章/路线徽章）
+            const badges =
+              '<span class="badge ' + route + '">' +
+              (route === "rag" ? "RAG 检索" : "工具调用") + "</span>" +
+              (ev.attempts > 1 ? '<span class="badge retry">校验重试 ×' + (ev.attempts - 1) + "</span>" : "");
+            bubble.innerHTML = render(full) + '<div class="meta">' + badges + "</div>";
+            if (refused) bubble.classList.add("refused");
+            paint();
+          }
+        }
       }
     } catch (e) {
-      pending.querySelector(".bubble").textContent = "请求失败：" + e;
+      bubble.textContent = "请求失败：" + e;
     }
-    $("chat").scrollTop = $("chat").scrollHeight;
+    paint();
     busy = false; $("send").disabled = false;
   }
 
