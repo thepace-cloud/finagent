@@ -69,7 +69,11 @@ class FinDB:
 
     def __init__(self, url: str | None = None):
         self.url = url or os.getenv("DATABASE_URL", "sqlite:///finagent.db")
-        self.engine = create_engine(self.url, future=True)
+        # pool_pre_ping：从池里取连接前先 ping 一下，死连接（MySQL 隔夜掐线）
+        # 自动丢弃重连——上线后第一个隔夜请求踩到的 "MySQL server has gone away"。
+        # pool_recycle：连接最多活 1 小时主动换新，抢在 wait_timeout 前面。
+        self.engine = create_engine(self.url, future=True,
+                                    pool_pre_ping=True, pool_recycle=3600)
         Base.metadata.create_all(self.engine)
         self._Session = sessionmaker(bind=self.engine, future=True, expire_on_commit=False)
 
