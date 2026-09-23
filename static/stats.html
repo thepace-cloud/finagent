@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>"贷"你明白 FinAgent · 运营看板</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: #eef1f5; color: #1a2233;
+    display: flex; justify-content: center;
+  }
+  .wrap { width: 100%; max-width: 680px; padding: 16px 16px 40px; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid #e5e9f0; background: #fff;
+    border-radius: 14px;
+  }
+  .title { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px; background: #2563eb;
+    color: #fff; font-weight: 700; font-size: 20px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  h1 { font-size: 16px; }
+  .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
+  .pills { display: flex; gap: 8px; align-items: center; }
+  .pill {
+    font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    background: #eef1f5; color: #8a94a6; text-decoration: none; white-space: nowrap;
+  }
+  .pill.ok { background: #e8f7ee; color: #15803d; }
+  .pill.warn { background: #fef3e2; color: #b45309; }
+
+  .card {
+    background: #fff; border-radius: 14px; padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .05); margin-top: 14px;
+  }
+  .card h2 {
+    font-size: 14px; color: #47546a; font-weight: 600; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .note { font-size: 11px; color: #8a94a6; font-weight: 400; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .tile { background: #f8fafc; border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .tile .num { font-size: 24px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+  .tile .num small { font-size: 13px; font-weight: 500; color: #8a94a6; margin-left: 1px; }
+  .tile .label { font-size: 12px; color: #8a94a6; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+
+  /* 占比条：段与段之间留 2px 底色缝；身份靠下方图例的文字，不裸靠颜色 */
+  .seg {
+    display: flex; gap: 2px; height: 14px; border-radius: 7px;
+    overflow: hidden; background: #e5e9f0; margin: 2px 0 12px;
+  }
+  .seg > div { min-width: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .chip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #47546a; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .chip b { color: #1a2233; font-weight: 600; }
+  .chip .pct { color: #8a94a6; }
+
+  .hint {
+    display: none; background: #eef4ff; border-radius: 10px;
+    padding: 10px 12px; font-size: 12px; color: #1d4ed8; line-height: 1.7;
+  }
+  .foot { font-size: 11px; color: #8a94a6; line-height: 1.8; margin-top: 4px; }
+  .refresh { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a94a6; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #15803d; flex: none;
+         animation: blink 2s infinite; }
+  @keyframes blink { 50% { opacity: .25; } }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 14px; }
+    .tile .num { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <div class="logo">F</div>
+      <div>
+        <h1>"贷"你明白 FinAgent</h1>
+        <div class="sub">运营看板 · 实时数字</div>
+      </div>
+    </div>
+    <div class="pills">
+      <a class="pill" href="/">聊天页</a>
+      <div id="health" class="pill">连接中</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>概览 <span class="note">自进程启动累计</span></h2>
+    <div class="tiles">
+      <div class="tile"><div class="num" id="kTotal">—</div><div class="label">总请求</div></div>
+      <div class="tile"><div class="num" id="kUp">—</div><div class="label">服务运行时长</div></div>
+      <div class="tile"><div class="num" id="kAvg">—<small></small></div><div class="label">平均回答延迟</div></div>
+      <div class="tile"><div class="num" id="kMax">—<small></small></div><div class="label">最大回答延迟</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>请求路径 <span class="note">Router 确定性分叉</span></h2>
+    <div class="seg" id="routeBar"></div>
+    <div class="legend">
+      <div class="chip"><span class="sw" style="background:#2563eb"></span>RAG 检索 <b id="nRag">0</b><span class="pct" id="pRag">—</span></div>
+      <div class="chip"><span class="sw" style="background:#7c3aed"></span>工具调用 <b id="nAna">0</b><span class="pct" id="pAna">—</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>护栏出口三档 <span class="note">校验不过 → 带反馈重试 → 降级拒答</span></h2>
+    <div class="seg" id="guardBar"></div>
+    <div class="legend">
+      <div class="chip"><span class="sw" style="background:#15803d"></span>一次通过 <b id="nFp">0</b><span class="pct" id="pFp">—</span></div>
+      <div class="chip"><span class="sw" style="background:#b45309"></span>重试后通过 <b id="nRt">0</b><span class="pct" id="pRt">—</span></div>
+      <div class="chip"><span class="sw" style="background:#b91c1c"></span>降级拒答 <b id="nDg">0</b><span class="pct" id="pDg">—</span></div>
+    </div>
+    <div class="foot">降级拒答 = 宁拒不错：回答未通过出口校验时明确拒绝，不编造利率等关键信息。</div>
+  </div>
+
+  <div class="card">
+    <div class="hint" id="emptyHint">
+      暂无请求记录——去 <a href="/">聊天页</a> 问一句，回到这里看数字跳动（每 5 秒自动刷新）。
+    </div>
+    <div class="refresh">
+      <span class="dot"></span>每 5 秒自动刷新 · 上次更新 <span id="updated">—</span>
+    </div>
+    <div class="foot">
+      计数为进程内存计数，服务重启后清零——它度量「本进程存活期间」的行为，适合演示与评测窗口；
+      数据源：<code>/metrics</code>（JSON，可直接 curl 验证）。
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const C = { rag: "#2563eb", ana: "#7c3aed",
+              fp: "#15803d", rt: "#b45309", dg: "#b91c1c" };
+
+  // 占比条：total 为 0 时画一根灰条（空态也是态，不留白）
+  function setBar(id, parts) {
+    const bar = $(id);
+    bar.innerHTML = "";
+    const total = parts.reduce((s, p) => s + p[0], 0);
+    if (!total) {
+      bar.innerHTML = '<div style="flex:1"></div>';
+      return;
+    }
+    for (const [v, color] of parts) {
+      const d = document.createElement("div");
+      d.style.width = (v / total * 100).toFixed(2) + "%";
+      d.style.background = color;
+      bar.appendChild(d);
+    }
+  }
+
+  const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+
+  function uptime(iso) {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (isNaN(ms) || ms < 0) return "—";
+    const m = Math.floor(ms / 60000), h = Math.floor(m / 60), d = Math.floor(h / 24);
+    return d > 0 ? d + " 天 " + (h % 24) + " 时" : h > 0 ? h + " 时 " + (m % 60) + " 分" : m + " 分";
+  }
+
+  async function tick() {
+    try {
+      const m = await (await fetch("/metrics")).json();
+      const c = m.counters || {};
+      const total = c["chat.total"] || 0;
+      const t = (m.timers || {})["chat.seconds"] || { count: 0, avg: 0, max: 0 };
+
+      $("kTotal").textContent = total;
+      $("kUp").textContent = uptime(m.started_at);
+      $("kAvg").innerHTML = (t.count ? t.avg.toFixed(2) : "—") + "<small>s</small>";
+      $("kMax").innerHTML = (t.count ? t.max.toFixed(2) : "—") + "<small>s</small>";
+
+      const rag = c["chat.rag"] || 0, ana = c["chat.analysis"] || 0;
+      setBar("routeBar", [[rag, C.rag], [ana, C.ana]]);
+      $("nRag").textContent = rag;  $("pRag").textContent = pct(rag, total);
+      $("nAna").textContent = ana;  $("pAna").textContent = pct(ana, total);
+
+      const fp = c["guard.first_pass"] || 0;
+      const rt = c["guard.retried"] || 0;
+      const dg = c["guard.degraded"] || 0;
+      setBar("guardBar", [[fp, C.fp], [rt, C.rt], [dg, C.dg]]);
+      $("nFp").textContent = fp;  $("pFp").textContent = pct(fp, total);
+      $("nRt").textContent = rt;  $("pRt").textContent = pct(rt, total);
+      $("nDg").textContent = dg;  $("pDg").textContent = pct(dg, total);
+
+      $("emptyHint").style.display = total ? "none" : "block";
+      $("updated").textContent = new Date().toLocaleTimeString("zh-CN");
+    } catch (e) {
+      $("updated").textContent = "连接中断";
+    }
+  }
+
+  // 健康角标：和聊天页同一逻辑（Redis/MySQL 真库 vs 降级）
+  fetch("/health").then(r => r.json()).then(h => {
+    const redis = (h.backend || "").startsWith("redis://");
+    const mysql = (h.db || "").includes("mysql");
+    const el = $("health");
+    el.textContent = (redis ? "Redis ✓  " : "内存降级  ") + (mysql ? "MySQL ✓" : "SQLite");
+    el.className = "pill " + (redis && mysql ? "ok" : "warn");
+  }).catch(() => { $("health").textContent = "服务未连接"; $("health").className = "pill warn"; });
+
+  tick();
+  setInterval(tick, 5000);
+</script>
+</body>
+</html>

@@ -102,6 +102,17 @@ def metrics():
     return snapshot()
 
 
+@app.get("/stats")
+def stats():
+    """运营看板页：/metrics 数字的可视化门面（static/stats.html）。
+
+    为什么单独一页而不是让评委读 JSON：演示需要一个一眼读懂的入口——
+    请求量、路径占比、护栏三档、延迟，数字随提问实时跳动（页内 5 秒自刷）。
+    数据口径与 /metrics 完全一致，本页只做展示，不做第二份统计。
+    """
+    return FileResponse("static/stats.html")
+
+
 @app.get("/cite")
 def cite(doc: str, page: int):
     """引用点击查原文：返回该 (doc, page) 下的全部 chunk 文本。
