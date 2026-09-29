@@ -1,0 +1,54 @@
+[
+ {
+  "q": "安居贷和乐享贷的申请条件有什么区别？",
+  "route": "compare",
+  "expect": "compare",
+  "cites": [
+   "anju_loan",
+   "lexiang_loan"
+  ],
+  "table": true,
+  "attempts": 1,
+  "problems": [],
+  "ok": true
+ },
+ {
+  "q": "这几款贷款哪个年龄限制更宽松？",
+  "route": "compare",
+  "expect": "compare",
+  "cites": [
+   "anju_loan",
+   "lexiang_loan",
+   "xingwang_loan"
+  ],
+  "table": true,
+  "attempts": 1,
+  "problems": [],
+  "ok": true
+ },
+ {
+  "q": "兴旺贷和安居贷的利率差别大吗？",
+  "route": "compare",
+  "expect": "compare",
+  "cites": [
+   "anju_loan",
+   "xingwang_loan"
+  ],
+  "table": true,
+  "attempts": 1,
+  "problems": [],
+  "ok": true
+ },
+ {
+  "q": "安居贷的申请条件是什么？",
+  "route": "rag",
+  "expect": "rag",
+  "cites": [
+   "anju_loan"
+  ],
+  "table": false,
+  "attempts": 1,
+  "problems": [],
+  "ok": true
+ }
+]
