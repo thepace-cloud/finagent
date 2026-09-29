@@ -16,8 +16,14 @@ A/B 模式（M6 起）：
 输出：控制台汇总 + 对比表 + v3_eval_results.txt 全量留档（可审计传统）。
 """
 import json
+import sys
+import time
 
 from sentence_transformers import SentenceTransformer
+
+# Windows 控制台默认 GBK：打印「✓」会 UnicodeEncodeError 杀掉整跑——
+# 换成 ? 只伤显示，不伤落盘（结果文件本身是 utf-8）
+sys.stdout.reconfigure(errors="replace")
 
 from llm import chat
 from v3_hybrid import BM25, hybrid_search
@@ -30,10 +36,18 @@ RESULT_FILE = "v3_eval_results.txt"
 
 def generate(query: str, hits) -> str:
     context = build_context(hits, CHUNK_BY_ID)
-    return chat([
+    messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": f"context:\n{context}\n\n问题：{query}"},
-    ])
+    ]
+    # 长批评测最怕瞬时断连一发入魂：temperature=0 重试结果不变，幂等安全
+    for attempt in range(3):
+        try:
+            return chat(messages)
+        except Exception:  # 评测脚本只求活到终点，第三次仍失败才向上抛
+            if attempt == 2:
+                raise
+            time.sleep(3 * (attempt + 1))
 
 
 def run_mode(label: str, hits_fn):
