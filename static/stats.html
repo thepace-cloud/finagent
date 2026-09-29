@@ -110,6 +110,7 @@
     <div class="seg" id="routeBar"></div>
     <div class="legend">
       <div class="chip"><span class="sw" style="background:#2563eb"></span>RAG 检索 <b id="nRag">0</b><span class="pct" id="pRag">—</span></div>
+      <div class="chip"><span class="sw" style="background:#0f766e"></span>产品对比 <b id="nCmp">0</b><span class="pct" id="pCmp">—</span></div>
       <div class="chip"><span class="sw" style="background:#7c3aed"></span>工具调用 <b id="nAna">0</b><span class="pct" id="pAna">—</span></div>
     </div>
   </div>
@@ -141,7 +142,7 @@
 
 <script>
   const $ = id => document.getElementById(id);
-  const C = { rag: "#2563eb", ana: "#7c3aed",
+  const C = { rag: "#2563eb", cmp: "#0f766e", ana: "#7c3aed",
               fp: "#15803d", rt: "#b45309", dg: "#b91c1c" };
 
   // 占比条：total 为 0 时画一根灰条（空态也是态，不留白）
@@ -182,9 +183,11 @@
       $("kAvg").innerHTML = (t.count ? t.avg.toFixed(2) : "—") + "<small>s</small>";
       $("kMax").innerHTML = (t.count ? t.max.toFixed(2) : "—") + "<small>s</small>";
 
-      const rag = c["chat.rag"] || 0, ana = c["chat.analysis"] || 0;
-      setBar("routeBar", [[rag, C.rag], [ana, C.ana]]);
+      const rag = c["chat.rag"] || 0, cmp = c["chat.compare"] || 0,
+            ana = c["chat.analysis"] || 0;
+      setBar("routeBar", [[rag, C.rag], [cmp, C.cmp], [ana, C.ana]]);
       $("nRag").textContent = rag;  $("pRag").textContent = pct(rag, total);
+      $("nCmp").textContent = cmp;  $("pCmp").textContent = pct(cmp, total);
       $("nAna").textContent = ana;  $("pAna").textContent = pct(ana, total);
 
       const fp = c["guard.first_pass"] || 0;

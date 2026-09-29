@@ -51,6 +51,14 @@
   .badge.rag { background: #e0ecff; color: #1d4ed8; }
   .badge.analysis { background: #f1e8ff; color: #7c3aed; }
   .badge.retry { background: #fdecec; color: #b91c1c; }
+  .badge.compare { background: #e6f6f2; color: #0f766e; }
+  .cmp-wrap { overflow-x: auto; margin: 8px 0; }
+  table.cmp { border-collapse: collapse; font-size: 13px; line-height: 1.6; width: 100%; }
+  table.cmp th, table.cmp td {
+    border: 1px solid #dfe5ee; padding: 6px 9px;
+    text-align: left; vertical-align: top;
+  }
+  table.cmp th { background: #f0f4fa; white-space: nowrap; }
   .cite {
     font-family: Consolas, monospace; font-size: 12px;
     background: #e8f7ee; color: #15803d; border-radius: 4px; padding: 0 4px;
@@ -126,13 +134,14 @@
 
   <main id="chat">
     <div class="msg assistant">
-      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以查股票行情（如「贵州茅台的股价」）。点击试试：<span class="cite">[anju_loan P1]</span></div>
+      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以对比产品（如「安居贷和乐享贷的区别」），或查股票行情（如「贵州茅台的股价」）。点击试试：<span class="cite">[anju_loan P1]</span></div>
     </div>
   </main>
 
   <div class="chips" id="chips">
     <button>安居贷的申请条件是什么？</button>
-    <button>它的首付比例和额度是多少？</button>
+    <button>安居贷和乐享贷的申请条件有什么区别？</button>
+    <button>这几款贷款哪个年龄限制更宽松？</button>
     <button>贵州茅台的股价怎么样？</button>
   </div>
 
@@ -170,11 +179,34 @@
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  // 渲染：**加粗** → <strong>，[anju_loan P2] → 绿色引用徽章
+  // 行内管线：**加粗** → <strong>，[anju_loan P2] → 绿色引用徽章
+  function inline(s) {
+    s = escapeHtml(s);
+    s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return s.replace(/\[([a-z_]+ P\d+)\]/g, '<span class="cite">[$1]</span>');
+  }
+
+  // 渲染：普通行走行内管线；连续「|」开头的行 = 一张 markdown 表 → 真表格
+  // （对比路径的对照表在这里落地，单元格里的引用徽章照样可点）
   function render(text) {
-    let h = escapeHtml(text);
-    h = h.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    h = h.replace(/\[([a-z_]+ P\d+)\]/g, '<span class="cite">[$1]</span>');
+    let h = "", table = [];
+    const flushTable = () => {
+      if (!table.length) return;
+      const rows = table.filter(r => !/^\s*\|?\s*:?-{2,}/.test(r)); // 丢 |---| 对齐行
+      const cells = r => r.replace(/^\s*\|/, "").replace(/\|\s*$/, "")
+                          .split("|").map(c => inline(c.trim()));
+      const trs = rows.map((r, i) => {
+        const tag = i === 0 ? "th" : "td";        // 首行 = 表头
+        return "<tr>" + cells(r).map(c => `<${tag}>${c}</${tag}>`).join("") + "</tr>";
+      });
+      h += '<div class="cmp-wrap"><table class="cmp">' + trs.join("") + "</table></div>";
+      table = [];
+    };
+    for (const line of text.split("\n")) {
+      if (line.trim().startsWith("|")) table.push(line);
+      else { flushTable(); h += inline(line) + "\n"; }
+    }
+    flushTable();
     return h;
   }
 
@@ -228,10 +260,12 @@
             full = ev.text; refused = true;  // 降级文案（后端连文案都给了）
             bubble.textContent = full;
           } else if (ev.type === "done") {
-            // 终稿化装：流式期间素颜文字，此刻上妆（加粗/引用徽章/路线徽章）
+            // 终稿化装：流式期间素颜文字，此刻上妆（加粗/引用徽章/对照表/路线徽章）
+            const ROUTE_LABELS = { rag: "RAG 检索", compare: "产品对比",
+                                   analysis: "工具调用" };
             const badges =
               '<span class="badge ' + route + '">' +
-              (route === "rag" ? "RAG 检索" : "工具调用") + "</span>" +
+              (ROUTE_LABELS[route] || route) + "</span>" +
               (ev.attempts > 1 ? '<span class="badge retry">校验重试 ×' + (ev.attempts - 1) + "</span>" : "");
             bubble.innerHTML = render(full) + '<div class="meta">' + badges + "</div>";
             if (refused) bubble.classList.add("refused");

@@ -39,8 +39,10 @@ from v4_demo import PRODUCT_WORDS, memory_text
 from v4_memory import Memory
 from v4_store import make_store
 from v5_analysis import run_analysis
+from v5_compare import (COMPARE_SYSTEM_PROMPT, build_compare_indexes,
+                        compare_search)
 from v5_retry import with_retry
-from v5_router import route
+from v5_router import detect_compare, route
 from v5_observability import inc, new_trace_id, observe, snapshot
 from v5_validator import (DEGRADED_ANSWER, MAX_RETRIES, feedback_text,
                           run_with_guard, validate_analysis,
@@ -73,6 +75,9 @@ async def lifespan(app: FastAPI):
     _state["bm25"] = BM25(
         [_state["chunk_by_id"][cid]["text"] for cid in _state["ids"]],
         _state["ids"])
+    # 对比路径子索引：每款产品一份小 BM25 + 向量子矩阵（M1 对比落地）
+    _state["cmp_idx"] = build_compare_indexes(
+        _state["chunk_by_id"], _state["ids"], _state["V"])
     logger.info("启动完成 backend=%s db=%s", backend, _state["db"].url)
     yield
 
@@ -151,10 +156,21 @@ def _rag_messages(query: str, hits, feedback=None) -> list[dict]:
     ]
 
 
-def _rag_gen_factory(query: str, hits):
-    """造 RAG 路径的生成器：feedback 拼进 prompt = 重试带反馈的落点。"""
+def _compare_messages(query: str, hits, feedback=None) -> list[dict]:
+    """对比路径的 prompt：与 RAG 同一配方，只换对比系统提示词
+    （先直接回答，再 markdown 表格逐维度对照 + 双侧引用 + 未提及如实说）。"""
+    context = build_context(hits, _state["chunk_by_id"])
+    note = f"\n\n（上轮校验反馈：{feedback}）" if feedback else ""
+    return [
+        {"role": "system", "content": COMPARE_SYSTEM_PROMPT},
+        {"role": "user", "content": f"context:\n{context}\n\n问题：{query}{note}"},
+    ]
+
+
+def _make_gen(messages_fn):
+    """生成器工厂（rag/compare 共用）：feedback 拼进 prompt = 重试带反馈的落点。"""
     def gen(feedback):
-        return chat_safe(_rag_messages(query, hits, feedback))
+        return chat_safe(messages_fn(feedback))
     return gen
 
 
@@ -180,12 +196,24 @@ def chat_endpoint(req: ChatRequest):
         gen = lambda feedback: run_analysis(   # noqa: E731
             req.message + (f"\n（上轮校验反馈：{feedback}）" if feedback else ""))
         validate = validate_analysis
+    elif route_name == "compare":
+        # 对比路径：分产品检索结构性保证每款都有座位（修 09-29 探针确诊的
+        # top-K 单产品霸占）。不做记忆补全——对比对象由 detect_compare 决定，
+        # 不需要从上文借产品名
+        companies = detect_compare(req.message)
+        logger.info("[trace=%s][compare] companies=%s", trace_id, companies)
+        hits = compare_search(_state["model"], _state["cmp_idx"],
+                              companies, req.message)
+        logger.info("[trace=%s][compare] hits=%s",
+                    trace_id, [cid for _, cid in hits])
+        gen = _make_gen(lambda fb: _compare_messages(req.message, hits, fb))
+        validate = validate_rag_factory(hits, _state["chunk_by_id"])
     else:
         q = _query_with_memory(req.message, memory)
         logger.info("[trace=%s][memory] 补全 query=%r", trace_id, q)
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)
-        gen = _rag_gen_factory(q, hits)
+        gen = _make_gen(lambda fb: _rag_messages(q, hits, fb))
         validate = validate_rag_factory(hits, _state["chunk_by_id"])
 
     # ── M2：出口质检（不过→带反馈重试1次→降级）──
@@ -248,12 +276,23 @@ def chat_stream_endpoint(req: ChatRequest):
 
     if route_name == "analysis":
         validate = validate_analysis
+        msgs_fn = None                            # 工具路径不流式生成，用不到
+    elif route_name == "compare":
+        # 与 /chat 同一对比配方：分产品检索 + 对比提示词（流式体验不降级）
+        companies = detect_compare(req.message)
+        logger.info("[trace=%s][compare] companies=%s (stream)",
+                    trace_id, companies)
+        hits = compare_search(_state["model"], _state["cmp_idx"],
+                              companies, req.message)
+        validate = validate_rag_factory(hits, _state["chunk_by_id"])
+        msgs_fn = lambda fb=None: _compare_messages(req.message, hits, fb)  # noqa: E731
     else:
         q = _query_with_memory(req.message, memory)
         logger.info("[trace=%s][memory] 补全 query=%r (stream)", trace_id, q)
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)
         validate = validate_rag_factory(hits, _state["chunk_by_id"])
+        msgs_fn = lambda fb=None: _rag_messages(q, hits, fb)               # noqa: E731
 
     def events():
         # 事件契约：meta → delta×N → [retry → delta×N] → [refused] → done
@@ -272,12 +311,12 @@ def chat_stream_endpoint(req: ChatRequest):
                 yield _sse({"type": "delta", "text": text})
             elif attempts == 1:
                 # 首发：流式边发边攒
-                for piece in chat_stream(_rag_messages(q, hits)):
+                for piece in chat_stream(msgs_fn()):
                     pieces.append(piece)
                     yield _sse({"type": "delta", "text": piece})
             else:
                 # 重试：罕见路径，非流式一把梭（前端已在 retry 事件时清屏）
-                text = chat_safe(_rag_messages(q, hits, feedback))
+                text = chat_safe(msgs_fn(feedback))
                 pieces = [text]
                 yield _sse({"type": "delta", "text": text})
             answer = "".join(pieces)

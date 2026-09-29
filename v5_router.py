@@ -42,12 +42,58 @@ ROUTES: tuple[Route, ...] = (
 
 DEFAULT_ROUTE = "rag"
 
+# ── 对比意图（M1 对比落地）─────────────────────────────────────────
+# 产品别名 → 语料 company 键（与 chunks.json / /cite 接口同一套键）。
+# 别名成对出现：全称「安居贷」+ 简称「安居」（用户嘴里的真实说法）
+COMPANY_ALIASES: tuple[tuple[str, str], ...] = (
+    ("安居贷", "anju_loan"), ("安居", "anju_loan"),
+    ("乐享贷", "lexiang_loan"), ("乐享", "lexiang_loan"),
+    ("兴旺贷", "xingwang_loan"), ("兴旺", "xingwang_loan"),
+)
+COMPARE_WORDS = (r"对比", r"区别", r"相比", r"差异", r"不同", r"哪个", r"哪家",
+                 r"更宽松", r"更划算")
+ALL_PRODUCTS_WORDS = (r"这几款", r"这三款", r"三款", r"各款", r"所有", r"分别")
+
+
+def detect_compare(user_msg: str) -> tuple[str, ...] | None:
+    """对比意图检测（确定性）：命中返回要对比的 company 元组，否则 None。
+
+    为什么不走 ROUTES 表：表能表达「命中一个关键词」，表达不了
+    「数出两个不同产品」这种结构性条件——所以独立成函数，
+    但同样确定性、可单测、决策可审计（返回值就是审计记录）。
+
+    规则（保守优先，宁可漏到 RAG 也不误伤单产品问题）：
+      1. 点名 ≥2 款产品 → 对比（产品都摆上桌了，意图不言自明）；
+      2. 比较词 + 全体指代词（这几款/三款/分别…）且没点名 → 三款全比；
+      3. 只点名 1 款 + 比较词 → 不算（「安居贷哪个城市能申请」是单产品题）。
+    """
+    companies: list[str] = []
+    for alias, company in COMPANY_ALIASES:
+        if alias in user_msg and company not in companies:
+            companies.append(company)
+    if len(companies) >= 2:
+        return tuple(companies)
+    if (any(re.search(p, user_msg) for p in COMPARE_WORDS)
+            and any(re.search(p, user_msg) for p in ALL_PRODUCTS_WORDS)):
+        all_companies: list[str] = []
+        for _, company in COMPANY_ALIASES:
+            if company not in all_companies:
+                all_companies.append(company)
+        return tuple(all_companies)
+    return None
+
 
 def route(user_msg: str) -> tuple[str, str | None]:
     """确定性分发：按 ROUTES 顺序匹配，返回 (路由名, 命中的词)。
 
     命中的词可能为 None（走了默认路由）——审计日志靠它解释每一次分叉。
     """
+    # 对比先于路由表：结构性条件表表达不了（见 detect_compare）；
+    # 且「安居贷和乐享贷的利息差多少」应按产品条款对比，不该被
+    # 「利息」关键词抢去工具路径算月供
+    prods = detect_compare(user_msg)
+    if prods:
+        return "compare", "+".join(prods)
     for r in ROUTES:
         for p in r.patterns:
             if re.search(p, user_msg):
@@ -63,6 +109,9 @@ if __name__ == "__main__":
         "那利率是多少",                                  # → rag 默认（注意："利率"不含"利息"）
         "安居贷首付和额度是多少",                        # → rag 默认
         "提前还款收不收违约金",                          # → rag 默认
+        "安居贷和乐享贷的申请条件有什么区别",             # → compare（点名两款）
+        "这几款贷款哪个年龄限制更宽松",                  # → compare（比较词+全体指代，2026-09-29 探针翻车题）
+        "安居贷哪个城市能申请",                          # → rag 默认（单产品+比较词 ≠ 对比）
     ]
     for msg in TEST_MSGS:
         name, hit = route(msg)
