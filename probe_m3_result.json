@@ -1,0 +1,43 @@
+{
+  "base": "http://47.95.222.61:8000",
+  "probes": [
+    {
+      "name": "画像存取+白名单",
+      "ok": true,
+      "detail": "回读一致=True；白名单拦截三套=是（HTTP 400）"
+    },
+    {
+      "name": "行为A: 二套→4.45%",
+      "ok": true,
+      "detail": "route=rag attempts=1 含4.45=True 引用P2=True"
+    },
+    {
+      "name": "行为A': 首套→3.95%",
+      "ok": true,
+      "detail": "同一问题含3.95=True 引用P2=True"
+    },
+    {
+      "name": "行为B: 新会话画像兜底",
+      "ok": true,
+      "detail": "route=rag 乐享贷兜底引用=True"
+    },
+    {
+      "name": "会话快照(它记得我)",
+      "ok": true,
+      "detail": "消息数=2 提过的产品=['安居贷']"
+    },
+    {
+      "name": "compare+RAG 回归",
+      "ok": true,
+      "detail": "compare=compare 空画像RAG=rag 兴旺贷引用=True"
+    }
+  ],
+  "counters": {
+    "chat.total": 5,
+    "chat.compare": 1,
+    "chat.assess": null,
+    "profile.update": 2
+  },
+  "verdict": "PASS",
+  "elapsed_s": 21.5
+}
