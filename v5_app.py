@@ -35,7 +35,7 @@ from v3_hybrid import BM25, hybrid_search
 from v3_m3 import load
 from v3_m4 import K, MODEL_PATH, SYSTEM_PROMPT, build_context
 from v4_db import FinDB
-from v4_demo import PRODUCT_WORDS, memory_text
+from v4_demo import PRODUCT_WORDS
 from v4_memory import Memory
 from v4_store import make_store
 from v5_analysis import run_analysis
@@ -94,6 +94,20 @@ class ChatRequest(BaseModel):
 
 class AssessRequest(BaseModel):
     answers: dict[str, str]
+
+
+class ProfileRequest(BaseModel):
+    user_id: str
+    session_id: str = ""
+    housing: str = ""      # "" / 首套 / 二套
+    product: str = ""      # "" / 安居贷 / 乐享贷 / 兴旺贷（意向产品）
+    budget: str = ""       # 自由文本，纯展示（"它记得我"，不接线行为）
+
+
+PROFILE_ALLOWED = {
+    "housing": ("", "首套", "二套"),
+    "product": ("", "安居贷", "乐享贷", "兴旺贷"),
+}
 
 
 @app.get("/health")
@@ -166,6 +180,54 @@ def assess_endpoint(req: AssessRequest):
     return result
 
 
+@app.get("/profile")
+def get_profile(user_id: str, session_id: str = ""):
+    """「它记得我」面板数据源（M3）：跨会话画像 + 本会话记忆快照。
+
+    画像读 Redis HASH profile:{user_id}（V4-M1 就建好的三 key 之一，
+    M5 之前主链路没消费它——现在补全逻辑和本端点共用这一份事实）。
+    会话快照只读不写：消息数 + 用户提过的产品，让"记得"看得见。
+    """
+    memory = Memory(_state["store"], session_id=session_id or "_",
+                    user_id=user_id)
+    stored = memory.profile()
+    profile = {f: stored.get(f, "") for f in ("housing", "product", "budget")}
+    msgs = memory.recent(20)
+    mentioned = sorted({w for w in PRODUCT_WORDS
+                        if any(w in m["content"] for m in msgs)})
+    # 简称是全称子串（安居 ⊂ 安居贷）时只留最长的，面板不重复展示
+    mentioned = [w for w in mentioned
+                 if not any(w != o and w in o for o in mentioned)]
+    return {"user_id": user_id, "profile": profile,
+            "session": {"id": session_id, "messages": memory.history_len(),
+                        "products_mentioned": mentioned},
+            "backend": _state["backend"]}
+
+
+@app.post("/profile")
+def save_profile(req: ProfileRequest):
+    """画像保存（M3）：白名单校验 → 增量写 Redis HASH。
+
+    为什么白名单而不是任意字段：画像会被主链路消费（补全/定向），
+    值域必须可枚举——任意文本进补全等于把注入面开进检索 query。
+    budget 例外（纯展示不接线），但限长。
+    """
+    for field, allowed in PROFILE_ALLOWED.items():
+        if getattr(req, field) not in allowed:
+            raise HTTPException(status_code=400,
+                                detail=f"{field} 非法取值：{getattr(req, field)!r}")
+    if len(req.budget) > 20:
+        raise HTTPException(status_code=400, detail="budget 过长（≤20字）")
+    memory = Memory(_state["store"], session_id=req.session_id or "_",
+                    user_id=req.user_id)
+    memory.update_profile(housing=req.housing, product=req.product,
+                          budget=req.budget)
+    inc("profile.update")
+    return {"ok": True, "profile": {"housing": req.housing,
+                                    "product": req.product,
+                                    "budget": req.budget}}
+
+
 @app.get("/cite")
 def cite(doc: str, page: int):
     """引用点击查原文：返回该 (doc, page) 下的全部 chunk 文本。
@@ -186,12 +248,30 @@ def index():
     return FileResponse("static/index.html")
 
 
-def _query_with_memory(user_msg: str, memory: Memory) -> str:
-    """记忆补全（迁自 v4_demo，逻辑未动）：本轮没点名产品、上下文里有 → 拼回去。"""
+def _query_with_memory(user_msg: str, memory: Memory,
+                       profile: dict | None = None) -> str:
+    """记忆补全（迁自 v4_demo，M3 扩为三级 + 套型定向）：
+    本轮点名产品 → 用本轮；没点名 → 会话上文提过借上文（近因优先）；
+    上文也没有 → 画像的意向产品兜底（跨会话长记忆）。另：画像里的住房
+    套型（首套/二套）在问安居贷利率类问题时定向拼入——同一句「利率多少」
+    首套答 3.95%、二套答 4.45%（各带 P2 引用），画像可编辑且行为可见变化。
+    """
     if any(w in user_msg for w in PRODUCT_WORDS):
-        return user_msg
-    hit = next((w for w in PRODUCT_WORDS if w in memory_text(memory)), None)
-    return f"{user_msg} {hit}" if hit else user_msg
+        q = user_msg
+    else:
+        conv_parts = [m["content"] for m in memory.recent(6)]
+        if memory.summary():
+            conv_parts.append(memory.summary())
+        conv = " ".join(conv_parts)
+        hit = next((w for w in PRODUCT_WORDS if w in conv), None)
+        if hit is None and profile:            # 上文没有 → 长期画像兜底
+            hit = next((w for w in PRODUCT_WORDS if w in profile.values()), None)
+        q = f"{user_msg} {hit}" if hit else user_msg
+    if (profile and profile.get("housing") in ("首套", "二套")
+            and "安居贷" in q
+            and any(k in q for k in ("利率", "利息", "月供", "费率"))):
+        q += f" {profile['housing']}住房"    # 语料措辞「首套住房」，BM25 命中更稳
+    return q
 
 
 def _rag_messages(query: str, hits, feedback=None) -> list[dict]:
@@ -257,7 +337,7 @@ def chat_endpoint(req: ChatRequest):
         gen = _make_gen(lambda fb: _compare_messages(req.message, hits, fb))
         validate = validate_rag_factory(hits, _state["chunk_by_id"])
     else:
-        q = _query_with_memory(req.message, memory)
+        q = _query_with_memory(req.message, memory, memory.profile())
         logger.info("[trace=%s][memory] 补全 query=%r", trace_id, q)
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)
@@ -335,7 +415,7 @@ def chat_stream_endpoint(req: ChatRequest):
         validate = validate_rag_factory(hits, _state["chunk_by_id"])
         msgs_fn = lambda fb=None: _compare_messages(req.message, hits, fb)  # noqa: E731
     else:
-        q = _query_with_memory(req.message, memory)
+        q = _query_with_memory(req.message, memory, memory.profile())
         logger.info("[trace=%s][memory] 补全 query=%r (stream)", trace_id, q)
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)

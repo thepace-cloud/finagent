@@ -5,20 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinAgent · 财经问答</title>
 <style>
+  /* ── 主题变量（M3 界面精修）：浅色为基准，深色整组覆盖 ── */
+  :root {
+    color-scheme: light;
+    --bg: #eef1f5; --panel: #fff; --text: #1a2233; --muted: #8a94a6;
+    --line: #e5e9f0; --bubble: #f4f6f9; --primary: #2563eb;
+    --primary-weak: #a8bde8; --input-line: #d7dde8; --link: #47546a;
+    --table-head: #f0f4fa; --table-line: #dfe5ee;
+    --card-bg: #f0f7ff; --card-line: #cfe1fb; --blue-deep: #1d4ed8;
+    --bar-track: #dbe7f8; --soft-line: #eef1f5;
+    --refused-bg: #fdecec; --refused-text: #b91c1c;
+    --notice-bg: #fef6ec; --notice-line: #f3ddbb; --notice-text: #92400e;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d1220; --panel: #141a29; --text: #e6eaf2; --muted: #8593a8;
+    --line: #232c41; --bubble: #1b2334; --primary: #3b82f6;
+    --primary-weak: #2a3d63; --input-line: #313c55; --link: #a9b6cc;
+    --table-head: #1c2436; --table-line: #2c3750;
+    --card-bg: #16233c; --card-line: #274067; --blue-deep: #7fa6f5;
+    --bar-track: #22304d; --soft-line: #232c41;
+    --refused-bg: #3b1717; --refused-text: #f08c8c;
+    --notice-bg: #33270f; --notice-line: #4a3a1c; --notice-text: #e5c07b;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
     font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
-    background: #eef1f5; display: flex; justify-content: center;
+    background: var(--bg); display: flex; justify-content: center;
   }
   .app {
     width: 100%; max-width: 760px; height: 100%;
-    display: flex; flex-direction: column; background: #fff;
+    display: flex; flex-direction: column; background: var(--panel);
     box-shadow: 0 0 40px rgba(0,0,0,.06);
   }
   header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px; border-bottom: 1px solid #e5e9f0; background: #fff;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--panel);
   }
   .title { display: flex; align-items: center; gap: 12px; }
   .logo {
@@ -26,11 +50,12 @@
     color: #fff; font-weight: 700; font-size: 20px;
     display: flex; align-items: center; justify-content: center;
   }
-  h1 { font-size: 17px; color: #1a2233; }
-  .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
+  h1 { font-size: 17px; color: var(--text); }
+  .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .pill {
     font-size: 12px; padding: 4px 10px; border-radius: 999px;
-    background: #eef1f5; color: #8a94a6;
+    background: var(--bg); color: var(--muted); text-decoration: none;
+    border: none; cursor: pointer; font-family: inherit;
   }
   .pill.ok { background: #e8f7ee; color: #15803d; }
   .pill.warn { background: #fef3e2; color: #b45309; }
@@ -42,8 +67,11 @@
     max-width: 82%; padding: 10px 14px; border-radius: 14px;
     font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word;
   }
-  .msg.user .bubble { background: #2563eb; color: #fff; border-bottom-right-radius: 4px; }
-  .msg.assistant .bubble { background: #f4f6f9; color: #1a2233; border-bottom-left-radius: 4px; }
+  .msg.user .bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: var(--bubble); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg { animation: rise .28s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) { .msg { animation: none; } }
   .meta { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
   .badge {
     font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 500;
@@ -55,10 +83,10 @@
   .cmp-wrap { overflow-x: auto; margin: 8px 0; }
   table.cmp { border-collapse: collapse; font-size: 13px; line-height: 1.6; width: 100%; }
   table.cmp th, table.cmp td {
-    border: 1px solid #dfe5ee; padding: 6px 9px;
+    border: 1px solid var(--table-line); padding: 6px 9px;
     text-align: left; vertical-align: top;
   }
-  table.cmp th { background: #f0f4fa; white-space: nowrap; }
+  table.cmp th { background: var(--table-head); white-space: nowrap; }
   .cite {
     font-family: Consolas, monospace; font-size: 12px;
     background: #e8f7ee; color: #15803d; border-radius: 4px; padding: 0 4px;
@@ -67,7 +95,7 @@
   .cite-panel {
     position: fixed; top: 0; right: 0; height: 100%;
     width: 360px; max-width: 90vw;
-    background: #fff; box-shadow: -6px 0 24px rgba(0,0,0,.12);
+    background: var(--panel); box-shadow: -6px 0 24px rgba(0,0,0,.12);
     transform: translateX(100%);                        /* 藏到右门外 */
     transition: transform .25s ease;
     display: flex; flex-direction: column;
@@ -76,13 +104,14 @@
   .cite-panel.open { transform: translateX(0%); }      /* 滑回门内 */
   .cite-panel-head {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 16px; border-bottom: 1px solid #e5e9f0; font-weight: 600;
+    padding: 14px 16px; border-bottom: 1px solid var(--line); font-weight: 600;
+    color: var(--text);
   }
   .cite-panel-body {
     padding: 16px; overflow-y: auto; font-size: 13px;
-    line-height: 1.8; white-space: pre-wrap;
+    line-height: 1.8; white-space: pre-wrap; color: var(--text);
   }
-  #citeClose { border: none; background: none; font-size: 16px; cursor: pointer; color: #8a94a6; }
+  #citeClose, #memClose { border: none; background: none; font-size: 16px; cursor: pointer; color: var(--muted); }
 
   .dots::after { content: "…"; animation: blink 1s infinite; }
   @keyframes blink { 50% { opacity: .2; } }
@@ -90,74 +119,111 @@
   .chips { display: flex; gap: 8px; padding: 0 20px 10px; flex-wrap: wrap; }
   .chips button {
     font-size: 12px; padding: 6px 12px; border-radius: 999px;
-    border: 1px solid #d7dde8; background: #fff; color: #47546a; cursor: pointer;
+    border: 1px solid var(--input-line); background: var(--panel); color: var(--link);
+    cursor: pointer; transition: transform .15s, border-color .15s, color .15s;
   }
-  .chips button:hover { border-color: #2563eb; color: #2563eb; }
+  .chips button:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
 
-  footer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid #e5e9f0; }
+  footer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--line); }
   footer input {
-    flex: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid #d7dde8;
-    font-size: 14px; outline: none;
+    flex: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--input-line);
+    font-size: 14px; outline: none; background: var(--panel); color: var(--text);
   }
-  footer input:focus { border-color: #2563eb; }
+  footer input:focus { border-color: var(--primary); }
   footer button {
-    padding: 0 22px; border: none; border-radius: 10px; background: #2563eb;
+    padding: 0 22px; border: none; border-radius: 10px; background: var(--primary);
     color: #fff; font-size: 14px; cursor: pointer;
   }
-  footer button:disabled { background: #a8bde8; cursor: default; }
+  footer button:disabled { background: var(--primary-weak); cursor: default; }
   .msg.assistant .bubble.refused {
-    background: #fdecec; color: #b91c1c; border-bottom-left-radius: 4px;
+    background: var(--refused-bg); color: var(--refused-text); border-bottom-left-radius: 4px;
   }
 
   /* ── 适配测评（M2）：问卷选项 + 推荐卡 ── */
   .badge.assess { background: #fff4e5; color: #c2410c; }
-  .qstep { font-size: 11px; color: #8a94a6; margin-bottom: 4px; }
+  .qstep { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
   .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .opts button {
     font-size: 13px; padding: 8px 14px; border-radius: 10px;
-    border: 1px solid #d7dde8; background: #fff; color: #1a2233;
+    border: 1px solid var(--input-line); background: var(--panel); color: var(--text);
     cursor: pointer; transition: border-color .15s, color .15s;
   }
-  .opts button:hover { border-color: #2563eb; color: #2563eb; }
+  .opts button:hover { border-color: var(--primary); color: var(--primary); }
   .qcancel {
-    font-size: 12px; color: #8a94a6; cursor: pointer; margin-top: 10px;
+    font-size: 12px; color: var(--muted); cursor: pointer; margin-top: 10px;
     display: inline-block;
   }
-  .qcancel:hover { color: #b91c1c; }
+  .qcancel:hover { color: var(--refused-text); }
   .acard .awin {
-    background: #f0f7ff; border: 1px solid #cfe1fb; border-radius: 12px;
+    background: var(--card-bg); border: 1px solid var(--card-line); border-radius: 12px;
     padding: 12px;
   }
   .acard .awin-name {
-    font-weight: 700; font-size: 15px; color: #1d4ed8;
+    font-weight: 700; font-size: 15px; color: var(--blue-deep);
     display: flex; justify-content: space-between; align-items: center; gap: 8px;
   }
-  .acard .ascore { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .acard .ascore { font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--blue-deep); }
   .acard .ascorebar {
-    height: 6px; background: #dbe7f8; border-radius: 3px; margin: 8px 0 2px;
+    height: 6px; background: var(--bar-track); border-radius: 3px; margin: 8px 0 2px;
   }
-  .acard .ascorebar i { display: block; height: 100%; background: #2563eb; border-radius: 3px; }
-  .acard .asec { font-size: 12px; color: #8a94a6; font-weight: 600; margin: 10px 0 4px; }
+  .acard .ascorebar i { display: block; height: 100%; background: var(--primary); border-radius: 3px;
+                        transition: width .6s ease; }
+  .acard .asec { font-size: 12px; color: var(--muted); font-weight: 600; margin: 10px 0 4px; }
   .acard .alist { list-style: none; }
   .acard .alist li {
     font-size: 13px; line-height: 1.8; padding-left: 14px; position: relative;
   }
-  .acard .alist li::before { content: "•"; position: absolute; left: 2px; color: #2563eb; }
+  .acard .alist li::before { content: "•"; position: absolute; left: 2px; color: var(--primary); }
   .acard .alist.concerns li::before { content: "!"; color: #b45309; font-weight: 700; }
   .acard .aest {
-    margin-top: 10px; background: #fff; border: 1px dashed #cfe1fb;
+    margin-top: 10px; background: var(--panel); border: 1px dashed var(--card-line);
     border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.8;
   }
   .acard .anone {
-    background: #fef6ec; border: 1px solid #f3ddbb; border-radius: 12px;
-    padding: 12px; font-size: 13px; line-height: 1.8; color: #92400e;
+    background: var(--notice-bg); border: 1px solid var(--notice-line); border-radius: 12px;
+    padding: 12px; font-size: 13px; line-height: 1.8; color: var(--notice-text);
   }
   .acard .arow {
-    font-size: 13px; line-height: 1.9; color: #47546a;
-    padding: 4px 0; border-bottom: 1px dashed #eef1f5;
+    font-size: 13px; line-height: 1.9; color: var(--link);
+    padding: 4px 0; border-bottom: 1px dashed var(--soft-line);
   }
-  .acard .arow b { color: #1a2233; }
-  .acard .anote { margin-top: 10px; font-size: 11px; color: #8a94a6; line-height: 1.6; }
+  .acard .arow b { color: var(--text); }
+  .acard .anote { margin-top: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+  /* ── 记忆面板（M3）：「它记得我」 ── */
+  .mem-sec { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+  .mem-field { font-size: 13px; color: var(--text); margin: 10px 0 6px; font-weight: 600; }
+  .mem-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mem-opts button {
+    font-size: 12px; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--input-line); background: var(--panel); color: var(--link);
+    cursor: pointer;
+  }
+  .mem-opts button.on {
+    border-color: var(--primary); color: var(--primary); background: var(--card-bg);
+    font-weight: 600;
+  }
+  #memBudget {
+    width: 100%; padding: 9px 12px; border-radius: 8px; font-size: 13px;
+    border: 1px solid var(--input-line); background: var(--panel); color: var(--text);
+    outline: none;
+  }
+  #memBudget:focus { border-color: var(--primary); }
+  .mem-save {
+    margin-top: 12px; width: 100%; padding: 10px; border: none; border-radius: 8px;
+    background: var(--primary); color: #fff; font-size: 14px; cursor: pointer;
+  }
+  .mem-save:disabled { background: var(--primary-weak); }
+  .mem-status { font-size: 12px; color: #15803d; margin-top: 8px; min-height: 16px; }
+  .mem-session {
+    font-size: 13px; line-height: 1.9; color: var(--text);
+    background: var(--bubble); border-radius: 8px; padding: 10px 12px;
+  }
+  .mem-session code { font-size: 11px; color: var(--muted); }
+  .mem-tip {
+    font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 14px;
+    border-top: 1px dashed var(--line); padding-top: 10px;
+  }
   @media (max-width: 640px) {
     .bubble { max-width: 92%; }
     footer input { font-size: 16px; }
@@ -177,14 +243,16 @@
       </div>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
+      <button class="pill" id="memBtn">🧠 记忆</button>
       <a class="pill" href="/stats" style="text-decoration:none;">运营看板</a>
+      <button class="pill" id="themeBtn" title="切换深色/浅色">🌙</button>
       <div id="health" class="pill">连接中</div>
     </div>
   </header>
 
   <main id="chat">
     <div class="msg assistant">
-      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），对比产品（如「安居贷和乐享贷的区别」），查股票行情（如「贵州茅台的股价」），也可以点下方 <b>📋 适配测评</b>，答几道题就告诉你哪款贷款适合你。点击试试：<span class="cite">[anju_loan P1]</span></div>
+      <div class="bubble">👋 你好，我是 <b>FinAgent</b>——只说有出处的话、答不了就明说的财经问答助手。<br><br>▸ <b>问规则</b>：「安居贷的申请条件是什么？」<br>▸ <b>比产品</b>：「安居贷和乐享贷的区别？」<br>▸ <b>做测评</b>：点下方 📋 适配测评，30 秒出带引用的推荐卡<br>▸ <b>查行情</b>：「贵州茅台的股价怎么样？」<br>▸ <b>看记忆</b>：右上角 🧠 记忆——它记得你的画像，可改，改完答案会变<br><br>点答案里的绿色引用徽章（如 <span class="cite">[anju_loan P1]</span>）可查看说明书原文。</div>
     </div>
   </main>
 
@@ -206,6 +274,30 @@
     <button id="citeClose">✕</button>
   </div>
   <div id="citeBody" class="cite-panel-body">（原文将显示在这里）</div>
+</div>
+<div id="memPanel" class="cite-panel">
+  <div class="cite-panel-head">
+    <span>🧠 它记得我</span>
+    <button id="memClose">✕</button>
+  </div>
+  <div class="cite-panel-body">
+    <div class="mem-sec">跨会话画像（可编辑 · 保存后下一轮问答立即生效）</div>
+    <div class="mem-field">住房套型</div>
+    <div class="mem-opts" id="optHousing">
+      <button data-v="">未设置</button><button data-v="首套">首套房</button><button data-v="二套">二套房</button>
+    </div>
+    <div class="mem-field">意向产品</div>
+    <div class="mem-opts" id="optProduct">
+      <button data-v="">未设置</button><button data-v="安居贷">安居贷</button><button data-v="乐享贷">乐享贷</button><button data-v="兴旺贷">兴旺贷</button>
+    </div>
+    <div class="mem-field">预算区间（仅展示）</div>
+    <input id="memBudget" maxlength="20" placeholder="如：100–150万">
+    <button id="memSave" class="mem-save">保存画像</button>
+    <div id="memStatus" class="mem-status"></div>
+    <div class="mem-sec" style="margin-top:16px;">本会话记忆（只读）</div>
+    <div id="memSession" class="mem-session">加载中…</div>
+    <div class="mem-tip">画像存于 Redis（profile:{user_id}），跨会话生效。把「住房套型」改成二套后问「安居贷的利率是多少」——答案会从首套 3.95% 变二套 4.45%（各带说明书引用）。</div>
+  </div>
 </div>
 </div>
 
@@ -366,6 +458,81 @@
     const optBtn = e.target.closest && e.target.closest(".opts button");
     if (optBtn && assessFlow) pickOption(optBtn);
   });
+
+  // ── 深色模式（M3）：localStorage 记住选择；/stats 同源读同一 key 同步 ──
+  function applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+    $("themeBtn").textContent = t === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", t); } catch (e) { /* 隐私模式忽略 */ }
+  }
+  $("themeBtn").onclick = () =>
+    applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem("theme"); } catch (e) {}
+  applyTheme(savedTheme ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+  // ── 记忆面板（M3）：画像可编辑 + 会话快照，行为变化当场可演示 ──
+  const memSel = { housing: "", product: "" };
+  $("memBtn").onclick = openMem;
+  $("memClose").onclick = () => $("memPanel").classList.remove("open");
+
+  function paintMemOpts() {
+    for (const [id, key] of [["optHousing", "housing"], ["optProduct", "product"]]) {
+      $(id).querySelectorAll("button").forEach(
+        b => b.classList.toggle("on", b.dataset.v === memSel[key]));
+    }
+  }
+
+  function openMem() {
+    $("memPanel").classList.add("open");
+    $("memStatus").textContent = "";
+    fetch(`/profile?user_id=${USER}&session_id=${SESSION}`)
+      .then(r => r.json())
+      .then(d => {
+        memSel.housing = d.profile.housing || "";
+        memSel.product = d.profile.product || "";
+        $("memBudget").value = d.profile.budget || "";
+        paintMemOpts();
+        const s = d.session;
+        $("memSession").innerHTML =
+          "会话 <code>" + escapeHtml(s.id || "—") + "</code> · 消息 <b>" +
+          s.messages + "</b> 条<br>" +
+          (s.products_mentioned.length
+            ? "你提过：" + s.products_mentioned.map(escapeHtml).join("、")
+            : "（本会话还没提过具体产品）");
+      })
+      .catch(e => { $("memSession").textContent = "加载失败：" + e; });
+  }
+
+  for (const [id, key] of [["optHousing", "housing"], ["optProduct", "product"]]) {
+    $(id).onclick = e => {
+      if (e.target.tagName !== "BUTTON") return;
+      memSel[key] = e.target.dataset.v;
+      paintMemOpts();
+    };
+  }
+
+  $("memSave").onclick = async () => {
+    $("memSave").disabled = true;
+    try {
+      const r = await fetch("/profile", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: USER, session_id: SESSION,
+          housing: memSel.housing, product: memSel.product,
+          budget: $("memBudget").value.trim(),
+        }),
+      });
+      const d = await r.json();
+      $("memStatus").textContent = d.ok
+        ? "✓ 已保存——下一轮问答立即生效"
+        : "保存失败：" + (d.detail || JSON.stringify(d));
+    } catch (e) {
+      $("memStatus").textContent = "保存失败：" + e;
+    }
+    $("memSave").disabled = false;
+  };
 
   // ── 适配测评（M2）：问卷流走独立 /assess 端点，不进 /chat 主链路 ──
   // 全程选择题（不敲字）：答案 value 直接是打分规则的输入键，零解析歧义

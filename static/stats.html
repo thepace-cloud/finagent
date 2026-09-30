@@ -5,18 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>"贷"你明白 FinAgent · 运营看板</title>
 <style>
+  /* 与聊天页同一套主题变量；主题选择存 localStorage，两页同源自动同步 */
+  :root {
+    color-scheme: light;
+    --bg: #eef1f5; --panel: #fff; --text: #1a2233; --muted: #8a94a6;
+    --line: #e5e9f0; --tile: #f8fafc; --link: #47546a;
+    --hint-bg: #eef4ff; --hint-text: #1d4ed8;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d1220; --panel: #141a29; --text: #e6eaf2; --muted: #8593a8;
+    --line: #232c41; --tile: #1b2334; --link: #a9b6cc;
+    --hint-bg: #16233c; --hint-text: #7fa6f5;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
     font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
-    background: #eef1f5; color: #1a2233;
+    background: var(--bg); color: var(--text);
     display: flex; justify-content: center;
   }
   .wrap { width: 100%; max-width: 680px; padding: 16px 16px 40px; }
 
   header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; border-bottom: 1px solid #e5e9f0; background: #fff;
+    padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
     border-radius: 14px;
   }
   .title { display: flex; align-items: center; gap: 12px; }
@@ -26,49 +39,49 @@
     display: flex; align-items: center; justify-content: center;
   }
   h1 { font-size: 16px; }
-  .sub { font-size: 12px; color: #8a94a6; margin-top: 2px; }
+  .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .pills { display: flex; gap: 8px; align-items: center; }
   .pill {
     font-size: 12px; padding: 4px 10px; border-radius: 999px;
-    background: #eef1f5; color: #8a94a6; text-decoration: none; white-space: nowrap;
+    background: var(--bg); color: var(--muted); text-decoration: none; white-space: nowrap;
   }
   .pill.ok { background: #e8f7ee; color: #15803d; }
   .pill.warn { background: #fef3e2; color: #b45309; }
 
   .card {
-    background: #fff; border-radius: 14px; padding: 16px;
+    background: var(--panel); border-radius: 14px; padding: 16px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .05); margin-top: 14px;
   }
   .card h2 {
-    font-size: 14px; color: #47546a; font-weight: 600; margin-bottom: 12px;
+    font-size: 14px; color: var(--link); font-weight: 600; margin-bottom: 12px;
     display: flex; justify-content: space-between; align-items: baseline;
   }
-  .note { font-size: 11px; color: #8a94a6; font-weight: 400; }
+  .note { font-size: 11px; color: var(--muted); font-weight: 400; }
 
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
-  .tile { background: #f8fafc; border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .tile { background: var(--tile); border-radius: 10px; padding: 12px 14px; min-width: 0; }
   .tile .num { font-size: 24px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
-  .tile .num small { font-size: 13px; font-weight: 500; color: #8a94a6; margin-left: 1px; }
-  .tile .label { font-size: 12px; color: #8a94a6; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+  .tile .num small { font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 1px; }
+  .tile .label { font-size: 12px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
 
   /* 占比条：段与段之间留 2px 底色缝；身份靠下方图例的文字，不裸靠颜色 */
   .seg {
     display: flex; gap: 2px; height: 14px; border-radius: 7px;
-    overflow: hidden; background: #e5e9f0; margin: 2px 0 12px;
+    overflow: hidden; background: var(--line); margin: 2px 0 12px;
   }
   .seg > div { min-width: 0; }
   .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; }
-  .chip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #47546a; }
+  .chip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--link); }
   .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
-  .chip b { color: #1a2233; font-weight: 600; }
-  .chip .pct { color: #8a94a6; }
+  .chip b { color: var(--text); font-weight: 600; }
+  .chip .pct { color: var(--muted); }
 
   .hint {
-    display: none; background: #eef4ff; border-radius: 10px;
-    padding: 10px 12px; font-size: 12px; color: #1d4ed8; line-height: 1.7;
+    display: none; background: var(--hint-bg); border-radius: 10px;
+    padding: 10px 12px; font-size: 12px; color: var(--hint-text); line-height: 1.7;
   }
-  .foot { font-size: 11px; color: #8a94a6; line-height: 1.8; margin-top: 4px; }
-  .refresh { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a94a6; }
+  .foot { font-size: 11px; color: var(--muted); line-height: 1.8; margin-top: 4px; }
+  .refresh { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #15803d; flex: none;
          animation: blink 2s infinite; }
   @keyframes blink { 50% { opacity: .25; } }
@@ -142,6 +155,12 @@
 </div>
 
 <script>
+  // 主题同步：读聊天页写入的 localStorage（同源共享），缺省跟随系统
+  try {
+    document.documentElement.dataset.theme = localStorage.getItem("theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+
   const $ = id => document.getElementById(id);
   const C = { rag: "#2563eb", cmp: "#0f766e", ana: "#7c3aed",
               fp: "#15803d", rt: "#b45309", dg: "#b91c1c" };
