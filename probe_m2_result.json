@@ -1,0 +1,32 @@
+{
+  "base": "http://47.95.222.61:8000",
+  "probes": [
+    {
+      "name": "问卷下发",
+      "ok": true,
+      "detail": "5 题（含条件题 True）、3 产品"
+    },
+    {
+      "name": "购房青年→安居贷+月供",
+      "ok": true,
+      "detail": "winner=anju_loan score=100 月供≈¥10433/月（200万·360期·4.75%） 引用失锚=无"
+    },
+    {
+      "name": "56岁消费→诚实全拒",
+      "ok": true,
+      "detail": "按您的情况，三款产品目前均不适合；乐享贷被拦：年龄超出上限（要求年满22周岁且不超过55周岁）"
+    },
+    {
+      "name": "测评计数器",
+      "ok": true,
+      "detail": "chat.assess=2"
+    },
+    {
+      "name": "RAG 主链路回归",
+      "ok": true,
+      "detail": "route=rag attempts=1 引用P1=有"
+    }
+  ],
+  "verdict": "PASS",
+  "elapsed_s": 2.9
+}
