@@ -24,7 +24,7 @@ import logging
 import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
@@ -39,6 +39,7 @@ from v4_demo import PRODUCT_WORDS, memory_text
 from v4_memory import Memory
 from v4_store import make_store
 from v5_analysis import run_analysis
+from v5_assess import PRODUCTS, QUESTIONS, assess
 from v5_compare import (COMPARE_SYSTEM_PROMPT, build_compare_indexes,
                         compare_search)
 from v5_retry import with_retry
@@ -91,6 +92,10 @@ class ChatRequest(BaseModel):
     message: str
 
 
+class AssessRequest(BaseModel):
+    answers: dict[str, str]
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "backend": _state.get("backend"),
@@ -116,6 +121,49 @@ def stats():
     数据口径与 /metrics 完全一致，本页只做展示，不做第二份统计。
     """
     return FileResponse("static/stats.html")
+
+
+@app.get("/assess")
+def assess_questions():
+    """适配测评问卷定义（M2）：前端拉题渲染聊天气泡，问卷与打分同源。
+
+    不做成硬编码在前端：问题选项的 value 是打分规则的输入键——单一
+    事实源，改问卷不用两头对表。
+    """
+    return {"questions": QUESTIONS, "products": PRODUCTS}
+
+
+@app.post("/assess")
+def assess_endpoint(req: AssessRequest):
+    """适配测评主入口（M2）：答案 → 确定性打分 → 推荐卡数据。
+
+    与 /chat 三路径并列的第四种能力，但刻意不进 route()：测评是用户
+    主动开始的多步流程，不是一句话的分类问题。全程零 LLM 调用——
+    规则查表毫秒级返回，同答案永远同结果。
+
+    出口同样过引用校验（宁拒不错在这里的形态）：结果里每条 cite 必须
+    真实存在于语料块——规则表若挂错页码当场 500 暴露，绝不静默带病。
+    """
+    try:
+        result = assess(req.answers)
+    except ValueError as e:                     # 问卷答案缺项/非法值
+        raise HTTPException(status_code=400, detail=str(e))
+
+    known = {(c["company"], c["page"])
+             for c in _state["chunk_by_id"].values()}
+    bad_cites = []
+    for p in result["products"]:
+        for item in p["reasons"] + p["concerns"] + p["gates"]:
+            doc, pn = item["cite"].rsplit(" ", 1)
+            if (doc, int(pn[1:])) not in known:
+                bad_cites.append(item["cite"])
+    if bad_cites:
+        logger.error("assess 规则表引用失锚: %s", bad_cites)
+        raise HTTPException(status_code=500,
+                            detail=f"规则表引用失锚: {bad_cites}")
+
+    inc("chat.assess")
+    return result
 
 
 @app.get("/cite")

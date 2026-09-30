@@ -102,6 +102,7 @@
       <div class="tile"><div class="num" id="kUp">—</div><div class="label">服务运行时长</div></div>
       <div class="tile"><div class="num" id="kAvg">—<small></small></div><div class="label">平均回答延迟</div></div>
       <div class="tile"><div class="num" id="kMax">—<small></small></div><div class="label">最大回答延迟</div></div>
+      <div class="tile"><div class="num" id="kAssess">—</div><div class="label">适配测评次数</div></div>
     </div>
   </div>
 
@@ -182,6 +183,7 @@
       $("kUp").textContent = uptime(m.started_at);
       $("kAvg").innerHTML = (t.count ? t.avg.toFixed(2) : "—") + "<small>s</small>";
       $("kMax").innerHTML = (t.count ? t.max.toFixed(2) : "—") + "<small>s</small>";
+      $("kAssess").textContent = c["chat.assess"] || 0;
 
       const rag = c["chat.rag"] || 0, cmp = c["chat.compare"] || 0,
             ana = c["chat.analysis"] || 0;

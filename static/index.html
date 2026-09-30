@@ -108,6 +108,56 @@
   .msg.assistant .bubble.refused {
     background: #fdecec; color: #b91c1c; border-bottom-left-radius: 4px;
   }
+
+  /* ── 适配测评（M2）：问卷选项 + 推荐卡 ── */
+  .badge.assess { background: #fff4e5; color: #c2410c; }
+  .qstep { font-size: 11px; color: #8a94a6; margin-bottom: 4px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .opts button {
+    font-size: 13px; padding: 8px 14px; border-radius: 10px;
+    border: 1px solid #d7dde8; background: #fff; color: #1a2233;
+    cursor: pointer; transition: border-color .15s, color .15s;
+  }
+  .opts button:hover { border-color: #2563eb; color: #2563eb; }
+  .qcancel {
+    font-size: 12px; color: #8a94a6; cursor: pointer; margin-top: 10px;
+    display: inline-block;
+  }
+  .qcancel:hover { color: #b91c1c; }
+  .acard .awin {
+    background: #f0f7ff; border: 1px solid #cfe1fb; border-radius: 12px;
+    padding: 12px;
+  }
+  .acard .awin-name {
+    font-weight: 700; font-size: 15px; color: #1d4ed8;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .acard .ascore { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .acard .ascorebar {
+    height: 6px; background: #dbe7f8; border-radius: 3px; margin: 8px 0 2px;
+  }
+  .acard .ascorebar i { display: block; height: 100%; background: #2563eb; border-radius: 3px; }
+  .acard .asec { font-size: 12px; color: #8a94a6; font-weight: 600; margin: 10px 0 4px; }
+  .acard .alist { list-style: none; }
+  .acard .alist li {
+    font-size: 13px; line-height: 1.8; padding-left: 14px; position: relative;
+  }
+  .acard .alist li::before { content: "•"; position: absolute; left: 2px; color: #2563eb; }
+  .acard .alist.concerns li::before { content: "!"; color: #b45309; font-weight: 700; }
+  .acard .aest {
+    margin-top: 10px; background: #fff; border: 1px dashed #cfe1fb;
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.8;
+  }
+  .acard .anone {
+    background: #fef6ec; border: 1px solid #f3ddbb; border-radius: 12px;
+    padding: 12px; font-size: 13px; line-height: 1.8; color: #92400e;
+  }
+  .acard .arow {
+    font-size: 13px; line-height: 1.9; color: #47546a;
+    padding: 4px 0; border-bottom: 1px dashed #eef1f5;
+  }
+  .acard .arow b { color: #1a2233; }
+  .acard .anote { margin-top: 10px; font-size: 11px; color: #8a94a6; line-height: 1.6; }
   @media (max-width: 640px) {
     .bubble { max-width: 92%; }
     footer input { font-size: 16px; }
@@ -123,7 +173,7 @@
       <div class="logo">F</div>
       <div>
         <h1>FinAgent</h1>
-        <div class="sub">财经问答 Agent · RAG 检索 + 工具调用 + 记忆</div>
+        <div class="sub">财经问答 Agent · 检索 / 对比 / 测评 / 工具调用</div>
       </div>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
@@ -134,11 +184,12 @@
 
   <main id="chat">
     <div class="msg assistant">
-      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），也可以对比产品（如「安居贷和乐享贷的区别」），或查股票行情（如「贵州茅台的股价」）。点击试试：<span class="cite">[anju_loan P1]</span></div>
+      <div class="bubble">你好，我是 FinAgent。可以问我贷款产品规则（如「安居贷的申请条件」），对比产品（如「安居贷和乐享贷的区别」），查股票行情（如「贵州茅台的股价」），也可以点下方 <b>📋 适配测评</b>，答几道题就告诉你哪款贷款适合你。点击试试：<span class="cite">[anju_loan P1]</span></div>
     </div>
   </main>
 
   <div class="chips" id="chips">
+    <button class="assess" style="border-color:#c2410c; color:#c2410c; background:#fff8f1;">📋 适配测评：我该选哪款？</button>
     <button>安居贷的申请条件是什么？</button>
     <button>安居贷和乐享贷的申请条件有什么区别？</button>
     <button>这几款贷款哪个年龄限制更宽松？</button>
@@ -222,7 +273,7 @@
   let busy = false;
   async function send(text) {
     text = text.trim();
-    if (!text || busy) return;
+    if (!text || busy || assessFlow) return;
     busy = true; $("send").disabled = true;
     addMsg("user", escapeHtml(text));
     const bubble = addMsg("assistant", '<span class="dots">思考中</span>')
@@ -285,7 +336,11 @@
   $("input").onkeydown = e => {
     if (e.key === "Enter") { send($("input").value); $("input").value = ""; }
   };
-  $("chips").onclick = e => { if (e.target.tagName === "BUTTON") send(e.target.textContent); };
+  $("chips").onclick = e => {
+    if (e.target.tagName !== "BUTTON") return;
+    if (e.target.classList.contains("assess")) { startAssess(); return; }
+    send(e.target.textContent);
+  };
   // Step 5：点徽章 → 从后端 /cite 取真原文装进面板
   async function openCite(badge) {
     const m = badge.textContent.match(/\[([a-z_]+) P(\d+)\]/);   // [anju_loan P1] → 拆出 doc、page
@@ -307,7 +362,128 @@
 
   $("chat").addEventListener("click", e => {
     if (e.target.classList.contains("cite")) openCite(e.target);
+    if (e.target.classList.contains("qcancel")) cancelAssess();
+    const optBtn = e.target.closest && e.target.closest(".opts button");
+    if (optBtn && assessFlow) pickOption(optBtn);
   });
+
+  // ── 适配测评（M2）：问卷流走独立 /assess 端点，不进 /chat 主链路 ──
+  // 全程选择题（不敲字）：答案 value 直接是打分规则的输入键，零解析歧义
+  let assessFlow = null;
+
+  async function startAssess() {
+    if (busy || assessFlow) return;
+    let d;
+    try {
+      const r = await fetch("/assess");
+      d = await r.json();
+    } catch (e) { addMsg("assistant", "测评服务未连接：" + e); return; }
+    assessFlow = { questions: d.questions, answers: {}, i: 0 };
+    $("input").disabled = true; $("send").disabled = true;
+    addMsg("assistant",
+      "<b>📋 贷款适配测评</b><br>几个问题（约 30 秒），答完给您一张带说明书出处的推荐卡。<br>" +
+      '<span class="qcancel">✕ 取消测评</span>');
+    askNext();
+  }
+
+  function askNext() {
+    const st = assessFlow;
+    while (st.i < st.questions.length) {          // 条件题：用途不命中就跳过
+      const q = st.questions[st.i];
+      if (!q.show_if || q.show_if.purpose === st.answers.purpose) break;
+      st.i++;
+    }
+    if (st.i >= st.questions.length) return finishAssess();
+    const q = st.questions[st.i];
+    const opts = q.options.map(o =>
+      `<button data-v="${o.value}">${escapeHtml(o.label)}</button>`).join("");
+    addMsg("assistant",
+      `<div class="qstep">第 ${st.i + 1} 题 · 适配测评</div>${escapeHtml(q.text)}` +
+      `<div class="opts">${opts}</div>`);
+  }
+
+  function pickOption(btn) {
+    const st = assessFlow;
+    const q = st.questions[st.i];
+    const opt = q.options.find(o => o.value === btn.dataset.v);
+    if (!opt) return;
+    st.answers[q.id] = opt.value;
+    addMsg("user", escapeHtml(opt.label));
+    btn.parentElement.remove();                   // 答过的题收走选项，留下问题
+    st.i++;
+    askNext();
+  }
+
+  function cancelAssess() {
+    if (!assessFlow) return;
+    assessFlow = null;
+    document.querySelectorAll(".opts").forEach(o => o.remove());
+    $("input").disabled = false; $("send").disabled = false;
+    addMsg("assistant", "已取消测评。点下方「📋 适配测评」可随时重新开始。");
+  }
+
+  async function finishAssess() {
+    const bubble = addMsg("assistant",
+      '<span class="dots">正在测算（规则打分，不经大模型，毫秒级）</span>')
+      .querySelector(".bubble");
+    try {
+      const r = await fetch("/assess", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: assessFlow.answers }),
+      });
+      bubble.innerHTML = renderCard(await r.json());
+    } catch (e) {
+      bubble.textContent = "测评失败：" + e;
+    }
+    assessFlow = null;
+    $("input").disabled = false; $("send").disabled = false;
+    $("chat").scrollTop = $("chat").scrollHeight;
+  }
+
+  const aLi = it => "<li>" + inline(it.text) +
+      ' <span class="cite">[' + it.cite + ']</span></li>';
+
+  // 推荐卡：首选（匹配度条+理由+顾虑+月供估算）→ 其他产品为何不是首选 → 方法注脚。
+  // 引用徽章沿用 [doc PN] 格式 → inline() 出来的徽章自动接 /cite 原文面板
+  function renderCard(r) {
+    const win = r.products.find(p => p.company === r.winner);
+    let h = '<div class="acard"><div class="ahead">📋 ' + escapeHtml(r.headline) + '</div>';
+    if (win) {
+      h += '<div class="awin"><div class="awin-name"><span>🏆 首选推荐：' +
+           escapeHtml(win.name) + '</span><span class="ascore">匹配度 ' +
+           win.score + '/100</span></div>' +
+           '<div class="ascorebar"><i style="width:' + win.score + '%"></i></div>' +
+           '<div class="asec">推荐理由</div><ul class="alist">' +
+           win.reasons.map(aLi).join("") + "</ul>";
+      if (win.concerns.length) {
+        h += '<div class="asec">需要注意</div><ul class="alist concerns">' +
+             win.concerns.map(aLi).join("") + "</ul>";
+      }
+      if (win.estimate) {
+        const e = win.estimate;
+        h += '<div class="aest">💰 估算月供 ≈ <b>¥' + e.monthly.toLocaleString() +
+             "</b>/月<br>口径：" + e.amount_wan + " 万 · " + escapeHtml(e.term_label) +
+             " · " + escapeHtml(e.base_note) + " " + e.base + "% + 期限溢价 " +
+             e.premium + "% = " + e.rate + "% · 等额本息 " +
+             '<span class="cite">[' + e.cite + ']</span> <span class="cite">[' +
+             e.formula_cite + ']</span>；实际以银行审批为准</div>';
+      }
+      h += '</div><div class="aother"><div class="asec">其他产品为什么不是首选</div>';
+    } else {
+      h += '<div class="anone">按您的情况，三款产品目前均不适合（各有原因，见下）' +
+           '——建议携带资料到银行网点咨询人工客服。</div>' +
+           '<div class="aother"><div class="asec">逐款说明</div>';
+    }
+    for (const p of r.products) {
+      if (win && p.company === win.company) continue;
+      const g = p.gates[0] || { text: "", cite: p.reasons[0].cite };
+      h += '<div class="arow"><b>' + escapeHtml(p.name) + "</b> — " +
+           (p.eligible ? "匹配度 " + p.score + "/100，可作备选"
+                       : "不适合：" + inline(g.text)) +
+           ' <span class="cite">[' + g.cite + ']</span></div>';
+    }
+    return h + '</div><div class="anote">' + escapeHtml(r.method) + "</div></div>";
+  }
 </script>
 </body>
 </html>
