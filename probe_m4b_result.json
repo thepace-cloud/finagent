@@ -1,0 +1,32 @@
+{
+  "base": "http://47.95.222.61:8000",
+  "probes": [
+    {
+      "name": "expand单元三查(留档自检)",
+      "ok": true,
+      "detail": "命中拼词: '对借款人年龄的要求 周岁' | 无命中原样: True | 已有词不重拼: True"
+    },
+    {
+      "name": "滚动摘要(5轮→total=6)",
+      "ok": true,
+      "detail": "total=6（10=没滚/6=已滚） 新最旧条=第3问安居贷=True 时序末条=assistant=True"
+    },
+    {
+      "name": "RAG回归(乐享贷+护栏一次过)",
+      "ok": true,
+      "detail": "HTTP 200 route=rag 引用[lexiang_loan=True 护栏一次过=True"
+    },
+    {
+      "name": "compare路由回归(双产品年龄)",
+      "ok": true,
+      "detail": "HTTP 200 route=compare 双侧引用=True"
+    },
+    {
+      "name": "流式回归(安居贷利率优惠)",
+      "ok": true,
+      "detail": "HTTP 200 route=rag done=True 引用[anju_loan=True"
+    }
+  ],
+  "verdict": "PASS",
+  "elapsed_s": 12.5
+}
