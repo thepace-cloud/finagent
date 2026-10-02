@@ -1,0 +1,32 @@
+{
+  "base": "http://47.95.222.61:8000",
+  "probes": [
+    {
+      "name": "历史回放(两句→四条时序)",
+      "ok": true,
+      "detail": "total=4 取回=4 首=user 末=assistant 时序对=True"
+    },
+    {
+      "name": "空会话历史不炸",
+      "ok": true,
+      "detail": "messages=[] total=0"
+    },
+    {
+      "name": "限流·轻档(65发/60每分)",
+      "ok": true,
+      "detail": "过闸400=60 掐流429=5（限 60/min） Retry-After=有"
+    },
+    {
+      "name": "限流·贵档未误伤",
+      "ok": true,
+      "detail": "HTTP 200 route=rag 引用=True"
+    },
+    {
+      "name": "流式SSE回归",
+      "ok": true,
+      "detail": "HTTP 200 首事件route=rag 出字=True"
+    }
+  ],
+  "verdict": "PASS",
+  "elapsed_s": 8.4
+}
