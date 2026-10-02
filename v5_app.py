@@ -24,7 +24,7 @@ import logging
 import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
@@ -42,6 +42,7 @@ from v5_analysis import run_analysis
 from v5_assess import PRODUCTS, QUESTIONS, assess
 from v5_compare import (COMPARE_SYSTEM_PROMPT, build_compare_indexes,
                         compare_search)
+from v5_ratelimit import chat_limiter, light_limiter
 from v5_retry import with_retry
 from v5_router import detect_compare, route
 from v5_observability import inc, new_trace_id, observe, snapshot
@@ -147,7 +148,7 @@ def assess_questions():
     return {"questions": QUESTIONS, "products": PRODUCTS}
 
 
-@app.post("/assess")
+@app.post("/assess", dependencies=[Depends(light_limiter.check)])
 def assess_endpoint(req: AssessRequest):
     """适配测评主入口（M2）：答案 → 确定性打分 → 推荐卡数据。
 
@@ -204,7 +205,7 @@ def get_profile(user_id: str, session_id: str = ""):
             "backend": _state["backend"]}
 
 
-@app.post("/profile")
+@app.post("/profile", dependencies=[Depends(light_limiter.check)])
 def save_profile(req: ProfileRequest):
     """画像保存（M3）：白名单校验 → 增量写 Redis HASH。
 
@@ -226,6 +227,20 @@ def save_profile(req: ProfileRequest):
     return {"ok": True, "profile": {"housing": req.housing,
                                     "product": req.product,
                                     "budget": req.budget}}
+
+
+@app.get("/history")
+def history(user_id: str, session_id: str, limit: int = 100):
+    """会话历史回放（M3.5）：读 Redis LIST，把本会话消息按时间序还回去。
+
+    为什么需要：记忆一直在服务端，但页面一刷新前端就"失忆"——用户看不到
+    它记得。本端点 + 前端恢复 = 刷新不丢对话，记忆闭环肉眼可见。纯只读：
+    不写不计数不调 LLM；limit 封顶防拉全库（历史本身也有 drop_oldest 上限）。
+    """
+    limit = max(1, min(limit, 100))
+    memory = Memory(_state["store"], session_id=session_id, user_id=user_id)
+    return {"user_id": user_id, "session_id": session_id,
+            "messages": memory.recent(limit), "total": memory.history_len()}
 
 
 @app.get("/cite")
@@ -302,7 +317,7 @@ def _make_gen(messages_fn):
     return gen
 
 
-@app.post("/chat")
+@app.post("/chat", dependencies=[Depends(chat_limiter.check)])
 def chat_endpoint(req: ChatRequest):
     trace_id = new_trace_id()
     t0 = time.perf_counter()
@@ -373,7 +388,7 @@ def _sse(obj: dict) -> str:
     return "data: " + json.dumps(obj, ensure_ascii=False) + "\n\n"
 
 
-@app.post("/chat/stream")
+@app.post("/chat/stream", dependencies=[Depends(chat_limiter.check)])
 def chat_stream_endpoint(req: ChatRequest):
     """流式版 /chat：SSE 逐段外推，前端边收边上屏（打字机）。
 

@@ -135,6 +135,10 @@
     color: #fff; font-size: 14px; cursor: pointer;
   }
   footer button:disabled { background: var(--primary-weak); cursor: default; }
+  .hist-sep {
+    text-align: center; font-size: 11px; color: var(--muted);
+    margin: 12px 0; user-select: none;
+  }
   .msg.assistant .bubble.refused {
     background: var(--refused-bg); color: var(--refused-text); border-bottom-left-radius: 4px;
   }
@@ -243,6 +247,7 @@
       </div>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
+      <button class="pill" id="newChatBtn" title="开启新会话（跨会话画像保留）">🆕 新对话</button>
       <button class="pill" id="memBtn">🧠 记忆</button>
       <a class="pill" href="/stats" style="text-decoration:none;">运营看板</a>
       <button class="pill" id="themeBtn" title="切换深色/浅色">🌙</button>
@@ -304,7 +309,13 @@
 <script>
   const $ = id => document.getElementById(id);
   const USER = "demo_user";
-  const SESSION = "web_" + Date.now().toString(36);   // 每次打开页面 = 新会话（记忆在会话内生效）
+  // 会话 id 存 localStorage：刷新回到同一会话（/history 恢复对话），
+  // 点「🆕 新对话」才轮换——记忆从"服务端知道"变成"用户看得见"
+  let SESSION;
+  try {
+    SESSION = localStorage.getItem("session") || ("web_" + Date.now().toString(36));
+    localStorage.setItem("session", SESSION);
+  } catch (e) { SESSION = "web_" + Date.now().toString(36); }
 
   // 健康状态：右上角显示真库/降级
   fetch("/health").then(r => r.json()).then(h => {
@@ -377,6 +388,12 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: USER, session_id: SESSION, message: text }),
       });
+      if (!r.ok) {                          // 限流(429)/服务异常：SSE 没开流，读错误 JSON
+        const e = await r.json().catch(() => ({}));
+        bubble.textContent = e.detail || ("请求失败：" + r.status);
+        busy = false; $("send").disabled = false;
+        return;
+      }
       const reader = r.body.getReader();     // ① 吸管
       const dec = new TextDecoder();         // ② 翻译官
       let buf = "", full = "", route = "", refused = false;
@@ -475,6 +492,29 @@
   // ── 记忆面板（M3）：画像可编辑 + 会话快照，行为变化当场可演示 ──
   const memSel = { housing: "", product: "" };
   $("memBtn").onclick = openMem;
+
+  // ── 会话恢复（M3.5）：欢迎页先拍照存底；有历史则回放，刷新不丢 ──
+  const WELCOME_HTML = $("chat").innerHTML;
+  (async () => {
+    try {
+      const d = await (await fetch(
+        `/history?user_id=${USER}&session_id=${SESSION}`)).json();
+      if (!d.messages.length) return;
+      $("chat").innerHTML =
+        '<div class="hist-sep">──── 本会话历史 · ' + d.messages.length +
+        ' 条 · 刷新不丢 ────</div>';
+      for (const m of d.messages)
+        addMsg(m.role === "user" ? "user" : "assistant",
+               m.role === "user" ? escapeHtml(m.content) : render(m.content));
+    } catch (e) { /* 恢复失败不挡新对话 */ }
+  })();
+
+  $("newChatBtn").onclick = () => {
+    SESSION = "web_" + Date.now().toString(36);   // 轮换会话；画像不动（跨会话）
+    try { localStorage.setItem("session", SESSION); } catch (e) {}
+    $("chat").innerHTML = WELCOME_HTML;
+    $("input").focus();
+  };
   $("memClose").onclick = () => $("memPanel").classList.remove("open");
 
   function paintMemOpts() {

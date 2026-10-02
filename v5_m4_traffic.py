@@ -62,6 +62,7 @@ def chat(sid, msg):
         "user_id": "demo_traffic", "session_id": sid, "message": msg})
     r.raise_for_status()
     assert r.json().get("answer"), "空回答"
+    time.sleep(1.5)   # 配速：限流 20/min（LLM 延迟+1.5s 间隔，怎么跑都碰不到闸）
 
 
 def assess(answers):
