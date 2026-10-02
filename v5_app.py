@@ -36,7 +36,7 @@ from v3_m3 import load
 from v3_m4 import K, MODEL_PATH, SYSTEM_PROMPT, build_context
 from v4_db import FinDB
 from v4_demo import PRODUCT_WORDS
-from v4_memory import Memory
+from v4_memory import Memory, maybe_roll_summary
 from v4_store import make_store
 from v5_analysis import run_analysis
 from v5_assess import PRODUCTS, QUESTIONS, assess
@@ -354,6 +354,8 @@ def chat_endpoint(req: ChatRequest):
     else:
         q = _query_with_memory(req.message, memory, memory.profile())
         logger.info("[trace=%s][memory] 补全 query=%r", trace_id, q)
+        # 同义扩展实验已按评测闸门回滚：评测持平+控制实验无行为增益
+        # （v5_qexpand.py 与 v3_eval 第三模式留档负结果，见 docs/原理卡.md #8）
         hits = hybrid_search(_state["model"], _state["V"], _state["ids"],
                              _state["bm25"], q, k=K)
         gen = _make_gen(lambda fb: _rag_messages(q, hits, fb))
@@ -376,6 +378,14 @@ def chat_endpoint(req: ChatRequest):
     memory.add_message("assistant", answer)
     _state["db"].append_message(req.session_id, "user", req.message)
     _state["db"].append_message(req.session_id, "assistant", answer)
+
+    # ── 滚动摘要（M4 接线）：历史到 8 条把最旧 4 条压进 summary 再裁掉。
+    # v4 建好的机制在 demo 里跑过、服务端一直没接——summary key 此前永远
+    # 是空的。压缩失败不许连累已生成的回答：降级为 warning。
+    try:
+        maybe_roll_summary(memory, chat_safe)
+    except Exception as e:
+        logger.warning("[trace=%s] 滚动摘要失败（不影响回答）: %s", trace_id, e)
 
     observe("chat.seconds", time.perf_counter() - t0)
     return {"route": route_name, "matched": hit, "answer": answer,
@@ -490,6 +500,11 @@ def chat_stream_endpoint(req: ChatRequest):
         memory.add_message("assistant", answer)
         _state["db"].append_message(req.session_id, "user", req.message)
         _state["db"].append_message(req.session_id, "assistant", answer)
+        try:                                  # 与 /chat 同款：失败不连累回答
+            maybe_roll_summary(memory, chat_safe)
+        except Exception as e:
+            logger.warning("[trace=%s] 滚动摘要失败（不影响回答）: %s",
+                           trace_id, e)
         observe("chat.seconds", time.perf_counter() - t0)
         yield _sse({"type": "done", "attempts": attempts, "refused": refused,
                     "route": route_name})

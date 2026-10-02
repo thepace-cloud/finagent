@@ -8,10 +8,10 @@
   零块题：golden=[]，检索层跳过；看生成是否编造引用（有引用即红）
           + 是否拒答（软信号，最终人工看原文）。
 
-A/B 模式（M6 起）：
+A/B/C 模式（M6 起 A/B，M4 冲刺加 C）：
   vector = 纯向量（M5 基线）   hybrid = BM25+RRF（M6 候选）
-  两路各跑全量 → 逐题对比。g05 是回归探针：纯向量在「利率优惠」上
-  稀释+语义盲区预期红，hybrid 应转绿——它就是为度量这次修复而存在的。
+  hybrid+expand = hybrid + 查询同义扩展（v5_qexpand，M4 冲刺上线闸门）
+  各路跑全量 → 逐题对比，相邻模式标翻绿/翻红。expand 翻红即回滚线上接线。
 
 输出：控制台汇总 + 对比表 + v3_eval_results.txt 全量留档（可审计传统）。
 """
@@ -29,6 +29,7 @@ from llm import chat
 from v3_hybrid import BM25, hybrid_search
 from v3_m3 import load, search
 from v3_m4 import K, MODEL_PATH, SYSTEM_PROMPT, build_context, check_citations
+from v5_qexpand import expand
 
 QUESTIONS = json.load(open("v3_golden.json", encoding="utf-8"))
 RESULT_FILE = "v3_eval_results.txt"
@@ -111,34 +112,46 @@ if __name__ == "__main__":
     modes = [
         ("vector", lambda query: search(model, V, ids, query, k=K)),
         ("hybrid", lambda query: hybrid_search(model, V, ids, bm25, query, k=K)),
+        # M4 查询同义扩展：上线闸门——翻红即回滚（v5_qexpand 只收有红题证据的词条）
+        ("hybrid+expand", lambda query: hybrid_search(model, V, ids, bm25,
+                                                      expand(query), k=K)),
     ]
     results = {}
     for label, fn in modes:
         results[label] = run_mode(label, fn)
 
     # ── 汇总 ──
-    summary = ["=" * 60, f"V3 评估 A/B：{len(QUESTIONS)} 题  K={K}  RECALL=10  RRF_K=60"]
+    summary = ["=" * 60, f"V3 评估：{len(QUESTIONS)} 题  K={K}  RECALL=10  RRF_K=60"
+               f"  模式：{' / '.join(label for label, _ in modes)}"]
     for label, _ in modes:
         summary += summarize(results[label][0], label)
     print("\n".join(summary))
 
-    # ── 逐题对比表：一眼看谁翻绿、谁翻红 ──
-    vec = {r[0]: r for r in results["vector"][0]}
-    hyb = {r[0]: r for r in results["hybrid"][0]}
-    print(f"\n{'id':<6}{'类':<7}{'vector':<22}{'hybrid'}")
+    # ── 逐题对比表：相邻模式之间标翻绿/翻红 ──
+    labels = [label for label, _ in modes]
+    by = {label: {r[0]: r for r in results[label][0]} for label in labels}
+    print(f"\n{'id':<6}{'类':<7}" + "".join(f"{c:<24}" for c in labels))
     changed = []
-    for qid in vec:
-        v = vec[qid][3] if vec[qid][2] == "MISS" else "检索✓ " + vec[qid][3]
-        h = hyb[qid][3] if hyb[qid][2] == "MISS" else "检索✓ " + hyb[qid][3]
-        mark = ""
-        if (vec[qid][2] == "hit") != (hyb[qid][2] == "hit"):
-            mark = "  ← 翻" + ("绿" if hyb[qid][2] == "hit" else "红") + "!"
-            changed.append(qid)
-        print(f"{qid:<6}{vec[qid][1]:<7}{v:<22}{h}{mark}")
+    for qid in by[labels[0]]:
+        row = f"{qid:<6}{by[labels[0]][qid][1]:<7}"
+        for i, label in enumerate(labels):
+            r = by[label][qid]
+            hit_now = r[2] == "hit"
+            cell = r[3] if not hit_now else "检索✓ " + r[3]
+            if i > 0:
+                hit_prev = by[labels[i - 1]][qid][2] == "hit"
+                if hit_now != hit_prev:
+                    cell += " ←翻" + ("绿" if hit_now else "红")
+                    changed.append(f"{qid}@{label}")
+            row += f"{cell:<24}"
+        print(row)
 
-    open(RESULT_FILE, "w", encoding="utf-8").write(
-        "\n".join(summary) + "\n\n── 逐题对比 ──\n"
-        + "\n".join(f"{qid}: vector={vec[qid]} | hybrid={hyb[qid]}" for qid in vec)
-        + "\n\n" + "\n".join(results["vector"][1]) + "\n" + "\n".join(results["hybrid"][1]))
+    with open(RESULT_FILE, "w", encoding="utf-8") as f:
+        f.write("\n".join(summary) + "\n\n── 逐题对比 ──\n")
+        for qid in by[labels[0]]:
+            f.write(f"{qid}: " + " | ".join(f"{label}={by[label][qid]}"
+                                            for label in labels) + "\n")
+        for label in labels:
+            f.write("\n" + "\n".join(results[label][1]))
     print(f"\n翻动题目：{changed if changed else '无'}")
     print(f"全量明细已写入 {RESULT_FILE}")
