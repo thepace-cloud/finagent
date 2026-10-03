@@ -39,8 +39,9 @@ ANA_QS = [
 ]
 ASSESS_ANSWERS = [
     {"purpose": "buy", "age": "mid", "term": "over5", "amount": "w100_300"},
+    # biz_years 合法值是 yes/no（v5_assess 白名单）——首跑发 ge2 被 400 拒过
     {"purpose": "business", "age": "mid", "term": "y1_3", "amount": "w20_100",
-     "biz_years": "ge2"},
+     "biz_years": "yes"},
 ]
 
 ok = fail = 0
