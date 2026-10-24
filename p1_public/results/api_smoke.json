@@ -1,0 +1,122 @@
+[
+  {
+    "request": {
+      "question": "比较随心智贷与中银E贷的额度上限，分别是多少万元？",
+      "requested_fields": [
+        "suixin.max_amount",
+        "e_loan.max_amount"
+      ]
+    },
+    "response": {
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元",
+          "e_loan.max_amount": "30万元"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ],
+          "e_loan.max_amount": [
+            "e_loan:p6"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": [
+            "额度最高不超过50万元。"
+          ],
+          "e_loan.max_amount": [
+            "贷款金额不超过30万元。"
+          ]
+        },
+        "missing": []
+      },
+      "trace": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "suixin",
+            "query": "比较与的额度上限，分别是多少万元？ 贷款金额 贷款额度 贷款比例"
+          },
+          {
+            "doc": "e_loan",
+            "query": "比较与的额度上限，分别是多少万元？ 贷款金额 贷款额度 贷款比例"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "suixin:p6",
+          "doc_id": "suixin",
+          "title": "随心智贷",
+          "text": "额度最高不超过50万元。单笔用款金额不低于1000元。额度有效期内，贷款额度可循环使用。",
+          "source_url": "https://www.boc.cn/pbservice/pb2/202409/t20240929_25163938.html",
+          "page": null,
+          "locator": "paragraph 6"
+        },
+        {
+          "id": "e_loan:p6",
+          "doc_id": "e_loan",
+          "title": "中银E贷•互联网个人信用循环消费贷款",
+          "text": "贷款金额不超过30万元。",
+          "source_url": "https://www.boc.cn/pbservice/pb2/201602/t20160229_6465863.html",
+          "page": null,
+          "locator": "paragraph 6"
+        }
+      ]
+    }
+  },
+  {
+    "request": {
+      "question": "按等额本息算月供，本金100000元，期限24个月，合同年利率没定。"
+    },
+    "response": {
+      "answer": {
+        "status": "clarify",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": [
+          "annual_rate"
+        ]
+      },
+      "trace": {
+        "strategy": "calculator"
+      },
+      "sources": []
+    }
+  },
+  {
+    "request": {
+      "question": "按等额本息算月供，本金100000元，合同年利率4%，期限24个月。",
+      "requested_fields": [
+        "monthly_payment"
+      ]
+    },
+    "response": {
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "4342.49元"
+        },
+        "evidence": {},
+        "quotes": {},
+        "missing": [],
+        "tool": {
+          "name": "monthly_payment",
+          "arguments": {
+            "principal": 100000.0,
+            "annual_rate": 4.0,
+            "term_months": 24.0
+          }
+        }
+      },
+      "trace": {
+        "strategy": "calculator"
+      },
+      "sources": []
+    }
+  }
+]

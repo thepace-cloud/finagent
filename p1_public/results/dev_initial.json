@@ -1,0 +1,5668 @@
+{
+  "scope": "AI-authored source-checked synthetic tasks; automated field/quote checks, no human semantic grading",
+  "split": "dev",
+  "evidence_budget": 6,
+  "model": "deepseek-chat",
+  "hashes": {
+    "sources.json": "915a2dc4f773d720f33ba2b2826573127a787e1acf6be504b36a7b2f6d8b85ae",
+    "passages.json": "c37adff38c9ddef0fe7e518a18d4b95d20fad0cb7a549144551e3f4ffda84561",
+    "cases_v2.json": "5dc62d98a097b01efea4d891652b7be0d182bc3d1df3f2de41efa09df0f3acdb",
+    "engine.py": "5da7b4cffcd0bdddd3af79e9325b17b4b31a21756d96e969d09041098341d5c8",
+    "evaluate.py": "747979f40d432988a3a1410343432b68e8a3dd7a866db91dd1540644d3ca2706"
+  },
+  "summary": {
+    "baseline": {
+      "evidence_complete": 15,
+      "retrieval_tasks": 21,
+      "macro_recall": 0.8571428571428571,
+      "mrr": 0.7698412698412699,
+      "automated_pass": 20,
+      "tasks": 30,
+      "api_errors": 0
+    },
+    "decomposed": {
+      "evidence_complete": 15,
+      "retrieval_tasks": 21,
+      "macro_recall": 0.8095238095238095,
+      "mrr": 0.5134920634920634,
+      "automated_pass": 21,
+      "tasks": 30,
+      "api_errors": 0
+    },
+    "oracle": {
+      "evidence_complete": 21,
+      "retrieval_tasks": 21,
+      "macro_recall": 1.0,
+      "mrr": 1.0,
+      "automated_pass": 20,
+      "tasks": 30,
+      "api_errors": 0
+    }
+  },
+  "rows": [
+    {
+      "id": "q03",
+      "case": {
+        "id": "q03",
+        "category": "single",
+        "group": "unsecured:max_amount",
+        "question": "个人无抵质押消费贷款的最高金额是多少万元？",
+        "gold": [
+          "unsecured:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "unsecured:p6",
+        "unsecured:p5",
+        "pledge_consumer:p6",
+        "pledge_consumer:p5",
+        "unsecured:p2",
+        "suixin:p6"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.04203219999999419,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.max_amount": "100万元"
+        },
+        "evidence": {
+          "unsecured.max_amount": [
+            "unsecured:p6"
+          ]
+        },
+        "quotes": {
+          "unsecured.max_amount": [
+            "贷款金额不超过100万元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.019056600000112667
+    },
+    {
+      "id": "q03",
+      "case": {
+        "id": "q03",
+        "category": "single",
+        "group": "unsecured:max_amount",
+        "question": "个人无抵质押消费贷款的最高金额是多少万元？",
+        "gold": [
+          "unsecured:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "unsecured:p5",
+        "unsecured:p6",
+        "unsecured:p22",
+        "unsecured:p11",
+        "unsecured:p9",
+        "unsecured:p7"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "unsecured",
+            "query": "的最高金额是多少万元？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.01921390000006795,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.max_amount": "100万元"
+        },
+        "evidence": {
+          "unsecured.max_amount": [
+            "unsecured:p6"
+          ]
+        },
+        "quotes": {
+          "unsecured.max_amount": [
+            "贷款金额不超过100万元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.017059300000255462
+    },
+    {
+      "id": "q03",
+      "case": {
+        "id": "q03",
+        "category": "single",
+        "group": "unsecured:max_amount",
+        "question": "个人无抵质押消费贷款的最高金额是多少万元？",
+        "gold": [
+          "unsecured:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "unsecured:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 2.100000074278796e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.max_amount": "100万元"
+        },
+        "evidence": {
+          "unsecured.max_amount": [
+            "unsecured:p6"
+          ]
+        },
+        "quotes": {
+          "unsecured.max_amount": [
+            "贷款金额不超过100万元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.016888399999970716
+    },
+    {
+      "id": "q04",
+      "case": {
+        "id": "q04",
+        "category": "single",
+        "group": "mortgage_consumer:max_years",
+        "question": "个人抵押消费贷款最长期限是多少年？",
+        "gold": [
+          "mortgage_consumer:p8"
+        ],
+        "expected": {
+          "mortgage_consumer.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "mortgage_consumer:p8",
+        "first_home:p16",
+        "mortgage_consumer:p7",
+        "unsecured:p8",
+        "commercial_property:p6",
+        "mortgage_consumer:p2"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.016933899999912683,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.max_years": "5年"
+        },
+        "evidence": {
+          "mortgage_consumer.max_years": [
+            "mortgage_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.max_years": [
+            "贷款期限最长不超过5年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.009044300000368821
+    },
+    {
+      "id": "q04",
+      "case": {
+        "id": "q04",
+        "category": "single",
+        "group": "mortgage_consumer:max_years",
+        "question": "个人抵押消费贷款最长期限是多少年？",
+        "gold": [
+          "mortgage_consumer:p8"
+        ],
+        "expected": {
+          "mortgage_consumer.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "mortgage_consumer:p8",
+        "mortgage_consumer:p7",
+        "mortgage_consumer:p5",
+        "mortgage_consumer:p9",
+        "mortgage_consumer:p20",
+        "mortgage_consumer:p11"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "mortgage_consumer",
+            "query": "最长期限是多少年？ 贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.01616779999994833,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.max_years": "5年"
+        },
+        "evidence": {
+          "mortgage_consumer.max_years": [
+            "mortgage_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.max_years": [
+            "贷款期限最长不超过5年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 3.4880503999997927
+    },
+    {
+      "id": "q04",
+      "case": {
+        "id": "q04",
+        "category": "single",
+        "group": "mortgage_consumer:max_years",
+        "question": "个人抵押消费贷款最长期限是多少年？",
+        "gold": [
+          "mortgage_consumer:p8"
+        ],
+        "expected": {
+          "mortgage_consumer.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "mortgage_consumer:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 3.3999999686784577e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.max_years": 5
+        },
+        "evidence": {
+          "mortgage_consumer.max_years": [
+            "mortgage_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.max_years": [
+            "贷款期限最长不超过5年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.max_years": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 3.386964000000262
+    },
+    {
+      "id": "q05",
+      "case": {
+        "id": "q05",
+        "category": "single",
+        "group": "pledge_consumer:min_amount",
+        "question": "个人质押类消费贷款的起贷金额是多少元？",
+        "gold": [
+          "pledge_consumer:p6"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "pledge_consumer:p5",
+        "pledge_consumer:p2",
+        "pledge_consumer:p6",
+        "mortgage_consumer:p5",
+        "pledge_consumer:p3",
+        "auto:p5"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.018061299999772018,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "evidence": {
+          "pledge_consumer.min_amount": [
+            "pledge_consumer:p6"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.min_amount": "贷款金额起点为1000元。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "pledge_consumer.min_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 3.418328400000064
+    },
+    {
+      "id": "q05",
+      "case": {
+        "id": "q05",
+        "category": "single",
+        "group": "pledge_consumer:min_amount",
+        "question": "个人质押类消费贷款的起贷金额是多少元？",
+        "gold": [
+          "pledge_consumer:p6"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "pledge_consumer:p5",
+        "pledge_consumer:p6",
+        "pledge_consumer:p9",
+        "pledge_consumer:p20",
+        "pledge_consumer:p7",
+        "pledge_consumer:p22"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "pledge_consumer",
+            "query": "的起贷金额是多少元？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.01759849999962171,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "evidence": {
+          "pledge_consumer.min_amount": [
+            "pledge_consumer:p6"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.min_amount": [
+            "贷款金额起点为1000元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "pledge_consumer.min_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 3.5520713999999316
+    },
+    {
+      "id": "q05",
+      "case": {
+        "id": "q05",
+        "category": "single",
+        "group": "pledge_consumer:min_amount",
+        "question": "个人质押类消费贷款的起贷金额是多少元？",
+        "gold": [
+          "pledge_consumer:p6"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "pledge_consumer:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.9000003703695256e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.min_amount": "1000元"
+        },
+        "evidence": {
+          "pledge_consumer.min_amount": [
+            "pledge_consumer:p6"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.min_amount": "贷款金额起点为1000元。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "pledge_consumer.min_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.01984649999985777
+    },
+    {
+      "id": "q08",
+      "case": {
+        "id": "q08",
+        "category": "single",
+        "group": "suixin:max_amount",
+        "question": "随心智贷的额度上限是多少万元？",
+        "gold": [
+          "suixin:p6"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "suixin:p6",
+        "suixin:p5",
+        "suixin:p2",
+        "pledge_consumer:p6",
+        "suixin:p8",
+        "pledge_consumer:p5"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01663670000016282,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": [
+            "额度最高不超过50万元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.02559350000001359
+    },
+    {
+      "id": "q08",
+      "case": {
+        "id": "q08",
+        "category": "single",
+        "group": "suixin:max_amount",
+        "question": "随心智贷的额度上限是多少万元？",
+        "gold": [
+          "suixin:p6"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p6",
+        "suixin:p5",
+        "suixin:p8",
+        "suixin:p7",
+        "suixin:p11",
+        "suixin:p26"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "suixin",
+            "query": "的额度上限是多少万元？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.014729500000157714,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": "额度最高不超过50万元。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.011538499999915075
+    },
+    {
+      "id": "q08",
+      "case": {
+        "id": "q08",
+        "category": "single",
+        "group": "suixin:max_amount",
+        "question": "随心智贷的额度上限是多少万元？",
+        "gold": [
+          "suixin:p6"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "suixin:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8999999156221747e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": [
+            "额度最高不超过50万元。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.003754100000151084
+    },
+    {
+      "id": "q09",
+      "case": {
+        "id": "q09",
+        "category": "single",
+        "group": "commercial_property:max_years",
+        "question": "个人商业用房贷款最长期限是多少年？",
+        "gold": [
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "commercial_property:p6",
+        "first_home:p16",
+        "mortgage_consumer:p8",
+        "commercial_property:p2",
+        "unsecured:p8",
+        "commercial_property:p26"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01576340000019627,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.02093430000013541
+    },
+    {
+      "id": "q09",
+      "case": {
+        "id": "q09",
+        "category": "single",
+        "group": "commercial_property:max_years",
+        "question": "个人商业用房贷款最长期限是多少年？",
+        "gold": [
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "commercial_property:p6",
+        "commercial_property:p25",
+        "commercial_property:p26",
+        "commercial_property:p21",
+        "commercial_property:p8",
+        "commercial_property:p23"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "commercial_property",
+            "query": "最长期限是多少年？ 贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.015102300000307878,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.009277200000269659
+    },
+    {
+      "id": "q09",
+      "case": {
+        "id": "q09",
+        "category": "single",
+        "group": "commercial_property:max_years",
+        "question": "个人商业用房贷款最长期限是多少年？",
+        "gold": [
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "commercial_property:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.5999999050109182e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.001252900000054069
+    },
+    {
+      "id": "q13",
+      "case": {
+        "id": "q13",
+        "category": "multi",
+        "group": "auto:amount_term",
+        "question": "个人消费类汽车贷款的最高金额和最长期限分别是多少？",
+        "gold": [
+          "auto:p6",
+          "auto:p8"
+        ],
+        "expected": {
+          "auto.max_amount": "100万元",
+          "auto.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "auto:p5",
+        "auto:p8",
+        "auto:p7",
+        "auto:p2",
+        "auto:p3",
+        "auto:p17"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01600609999968583,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.5,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": true,
+        "field_matches": {
+          "auto.max_amount": false,
+          "auto.max_years": false
+        },
+        "grounding_errors": [
+          "auto.max_amount:wrong_source_for_expected_fact",
+          "auto.max_years:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005776800000148796
+    },
+    {
+      "id": "q13",
+      "case": {
+        "id": "q13",
+        "category": "multi",
+        "group": "auto:amount_term",
+        "question": "个人消费类汽车贷款的最高金额和最长期限分别是多少？",
+        "gold": [
+          "auto:p6",
+          "auto:p8"
+        ],
+        "expected": {
+          "auto.max_amount": "100万元",
+          "auto.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "auto:p5",
+        "auto:p7",
+        "auto:p6",
+        "auto:p8",
+        "auto:p20",
+        "auto:p9"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "auto",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "auto",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.02359039999964807,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "auto.max_amount": "100万元",
+          "auto.max_years": "5年"
+        },
+        "evidence": {
+          "auto.max_amount": [
+            "auto:p6"
+          ],
+          "auto.max_years": [
+            "auto:p8"
+          ]
+        },
+        "quotes": {
+          "auto.max_amount": [
+            "贷款金额不超过100万元。"
+          ],
+          "auto.max_years": [
+            "贷款期限最长不超过5年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "auto.max_amount": true,
+          "auto.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0048375000001215085
+    },
+    {
+      "id": "q13",
+      "case": {
+        "id": "q13",
+        "category": "multi",
+        "group": "auto:amount_term",
+        "question": "个人消费类汽车贷款的最高金额和最长期限分别是多少？",
+        "gold": [
+          "auto:p6",
+          "auto:p8"
+        ],
+        "expected": {
+          "auto.max_amount": "100万元",
+          "auto.max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "auto:p6",
+        "auto:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 2.099999619531445e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "auto.max_amount": "100万元",
+          "auto.max_years": "5年"
+        },
+        "evidence": {
+          "auto.max_amount": [
+            "auto:p6"
+          ],
+          "auto.max_years": [
+            "auto:p8"
+          ]
+        },
+        "quotes": {
+          "auto.max_amount": [
+            "贷款金额不超过100万元。"
+          ],
+          "auto.max_years": [
+            "贷款期限最长不超过5年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "auto.max_amount": true,
+          "auto.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.014063199999782228
+    },
+    {
+      "id": "q14",
+      "case": {
+        "id": "q14",
+        "category": "multi",
+        "group": "overseas_student:amount_term",
+        "question": "个人留学贷款单笔最高多少万元，最长期限多少年？",
+        "gold": [
+          "overseas_student:p6",
+          "overseas_student:p8"
+        ],
+        "expected": {
+          "overseas_student.single_max": "30万元",
+          "overseas_student.max_years": "7年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "overseas_student:p6",
+        "overseas_student:p8",
+        "overseas_student:p7",
+        "overseas_student:p2",
+        "overseas_student:p5",
+        "first_home:p16"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.014608099999804836,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "overseas_student.single_max": "30万元",
+          "overseas_student.max_years": "7年"
+        },
+        "evidence": {
+          "overseas_student.single_max": [
+            "overseas_student:p6"
+          ],
+          "overseas_student.max_years": [
+            "overseas_student:p8"
+          ]
+        },
+        "quotes": {
+          "overseas_student.single_max": [
+            "单笔贷款金额最高不超过30万元人民币"
+          ],
+          "overseas_student.max_years": [
+            "贷款期限最长7年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "overseas_student.single_max": true,
+          "overseas_student.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.005231900000126188
+    },
+    {
+      "id": "q14",
+      "case": {
+        "id": "q14",
+        "category": "multi",
+        "group": "overseas_student:amount_term",
+        "question": "个人留学贷款单笔最高多少万元，最长期限多少年？",
+        "gold": [
+          "overseas_student:p6",
+          "overseas_student:p8"
+        ],
+        "expected": {
+          "overseas_student.single_max": "30万元",
+          "overseas_student.max_years": "7年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "overseas_student:p5",
+        "overseas_student:p7",
+        "overseas_student:p30",
+        "overseas_student:p8",
+        "overseas_student:p32",
+        "overseas_student:p19"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "overseas_student",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "overseas_student",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.027444399999694724,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.25,
+      "answer": {
+        "status": "clarify",
+        "facts": {
+          "overseas_student.max_years": "7年"
+        },
+        "evidence": {
+          "overseas_student.max_years": [
+            "overseas_student:p8"
+          ]
+        },
+        "quotes": {
+          "overseas_student.max_years": [
+            "贷款期限最长7年。"
+          ]
+        },
+        "missing": [
+          "single_max"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "overseas_student.single_max": false,
+          "overseas_student.max_years": true
+        },
+        "grounding_errors": [
+          "overseas_student.single_max:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.006949300000087533
+    },
+    {
+      "id": "q14",
+      "case": {
+        "id": "q14",
+        "category": "multi",
+        "group": "overseas_student:amount_term",
+        "question": "个人留学贷款单笔最高多少万元，最长期限多少年？",
+        "gold": [
+          "overseas_student:p6",
+          "overseas_student:p8"
+        ],
+        "expected": {
+          "overseas_student.single_max": "30万元",
+          "overseas_student.max_years": "7年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "overseas_student:p6",
+        "overseas_student:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 2.000000222324161e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "overseas_student.single_max": "30万元",
+          "overseas_student.max_years": "7年"
+        },
+        "evidence": {
+          "overseas_student.single_max": [
+            "overseas_student:p6"
+          ],
+          "overseas_student.max_years": [
+            "overseas_student:p8"
+          ]
+        },
+        "quotes": {
+          "overseas_student.single_max": [
+            "单笔贷款金额最高不超过30万元人民币"
+          ],
+          "overseas_student.max_years": [
+            "贷款期限最长7年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "overseas_student.single_max": true,
+          "overseas_student.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0014833000000180618
+    },
+    {
+      "id": "q15",
+      "case": {
+        "id": "q15",
+        "category": "multi",
+        "group": "suixin:amount_term",
+        "question": "随心智贷额度最高多少万元，单笔用款最长多少年？",
+        "gold": [
+          "suixin:p6",
+          "suixin:p8"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "suixin:p8",
+        "suixin:p6",
+        "first_home:p16",
+        "suixin:p14",
+        "suixin:p27",
+        "suixin:p5"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01677830000016911,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ],
+          "suixin.single_max_years": [
+            "suixin:p8"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": [
+            "额度最高不超过50万元。"
+          ],
+          "suixin.single_max_years": [
+            "单笔用款期限最长5年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true,
+          "suixin.single_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.014794299999721261
+    },
+    {
+      "id": "q15",
+      "case": {
+        "id": "q15",
+        "category": "multi",
+        "group": "suixin:amount_term",
+        "question": "随心智贷额度最高多少万元，单笔用款最长多少年？",
+        "gold": [
+          "suixin:p6",
+          "suixin:p8"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p5",
+        "suixin:p7",
+        "suixin:p6",
+        "suixin:p8",
+        "suixin:p26",
+        "suixin:p18"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "suixin",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "suixin",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.021921199999724195,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ],
+          "suixin.single_max_years": [
+            "suixin:p8"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": [
+            "额度最高不超过50万元。"
+          ],
+          "suixin.single_max_years": [
+            "单笔用款期限最长5年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true,
+          "suixin.single_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.007685199999741599
+    },
+    {
+      "id": "q15",
+      "case": {
+        "id": "q15",
+        "category": "multi",
+        "group": "suixin:amount_term",
+        "question": "随心智贷额度最高多少万元，单笔用款最长多少年？",
+        "gold": [
+          "suixin:p6",
+          "suixin:p8"
+        ],
+        "expected": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "suixin:p6",
+        "suixin:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8000000636675395e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_amount": "50万元",
+          "suixin.single_max_years": "5年"
+        },
+        "evidence": {
+          "suixin.max_amount": [
+            "suixin:p6"
+          ],
+          "suixin.single_max_years": [
+            "suixin:p8"
+          ]
+        },
+        "quotes": {
+          "suixin.max_amount": "额度最高不超过50万元。",
+          "suixin.single_max_years": "单笔用款期限最长5年"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_amount": true,
+          "suixin.single_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.01044000000001688
+    },
+    {
+      "id": "q16",
+      "case": {
+        "id": "q16",
+        "category": "multi",
+        "group": "national_student:amount_term",
+        "question": "国家助学贷款本专科生每年额度上限及贷款最长期限分别是多少？",
+        "gold": [
+          "national_student:p8",
+          "national_student:p10"
+        ],
+        "expected": {
+          "national_student.undergrad_annual": "20000元",
+          "national_student.max_years": "22年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "national_student:p7",
+        "national_student:p10",
+        "national_student:p8",
+        "national_student:p9",
+        "suixin:p8",
+        "first_home:p16"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.014639100000295002,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "national_student.undergrad_annual": "20000元",
+          "national_student.max_years": "22年"
+        },
+        "evidence": {
+          "national_student.undergrad_annual": [
+            "national_student:p8"
+          ],
+          "national_student.max_years": [
+            "national_student:p10"
+          ]
+        },
+        "quotes": {
+          "national_student.undergrad_annual": [
+            "全日制普通本专科学生（含第二学士学位、高职学生、预科生）每人每年申请贷款额度不超过20000元"
+          ],
+          "national_student.max_years": [
+            "国家助学贷款期限为学制剩余年限加15年，最长不超过22年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "national_student.undergrad_annual": true,
+          "national_student.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.01061859999981607
+    },
+    {
+      "id": "q16",
+      "case": {
+        "id": "q16",
+        "category": "multi",
+        "group": "national_student:amount_term",
+        "question": "国家助学贷款本专科生每年额度上限及贷款最长期限分别是多少？",
+        "gold": [
+          "national_student:p8",
+          "national_student:p10"
+        ],
+        "expected": {
+          "national_student.undergrad_annual": "20000元",
+          "national_student.max_years": "22年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "national_student:p7",
+        "national_student:p9",
+        "national_student:p5",
+        "national_student:p20",
+        "national_student:p10",
+        "national_student:p11"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "national_student",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "national_student",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.020336500000212254,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.2,
+      "answer": {
+        "status": "insufficient",
+        "facts": {
+          "national_student.max_years": "22年"
+        },
+        "evidence": {
+          "national_student.max_years": [
+            "national_student:p10"
+          ]
+        },
+        "quotes": {
+          "national_student.max_years": [
+            "国家助学贷款期限为学制剩余年限加15年，最长不超过22年。"
+          ]
+        },
+        "missing": [
+          "national_student.undergrad_annual"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "national_student.undergrad_annual": false,
+          "national_student.max_years": true
+        },
+        "grounding_errors": [
+          "national_student.undergrad_annual:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.017851000000064232
+    },
+    {
+      "id": "q16",
+      "case": {
+        "id": "q16",
+        "category": "multi",
+        "group": "national_student:amount_term",
+        "question": "国家助学贷款本专科生每年额度上限及贷款最长期限分别是多少？",
+        "gold": [
+          "national_student:p8",
+          "national_student:p10"
+        ],
+        "expected": {
+          "national_student.undergrad_annual": "20000元",
+          "national_student.max_years": "22年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "national_student:p8",
+        "national_student:p10"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8000000636675395e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "national_student.undergrad_annual": "20000元",
+          "national_student.max_years": "22年"
+        },
+        "evidence": {
+          "national_student.undergrad_annual": [
+            "national_student:p8"
+          ],
+          "national_student.max_years": [
+            "national_student:p10"
+          ]
+        },
+        "quotes": {
+          "national_student.undergrad_annual": [
+            "全日制普通本专科学生（含第二学士学位、高职学生、预科生）每人每年申请贷款额度不超过20000元"
+          ],
+          "national_student.max_years": [
+            "国家助学贷款期限为学制剩余年限加15年，最长不超过22年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "national_student.undergrad_annual": true,
+          "national_student.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0016163000000233296
+    },
+    {
+      "id": "q17",
+      "case": {
+        "id": "q17",
+        "category": "multi",
+        "group": "pledge_consumer:amount_term",
+        "question": "个人质押类消费贷款最低金额和最长期限分别是多少？",
+        "gold": [
+          "pledge_consumer:p6",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "pledge_consumer:p8",
+        "pledge_consumer:p5",
+        "pledge_consumer:p7",
+        "first_home:p16",
+        "pledge_consumer:p2",
+        "unsecured:p8"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.015497700000196346,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.max_years": "1年"
+        },
+        "evidence": {
+          "pledge_consumer.max_years": [
+            "pledge_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.max_years": [
+            "贷款期限最短为一个月（含），最长为一年（含）。"
+          ]
+        },
+        "missing": [
+          "pledge_consumer.min_amount"
+        ]
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": false,
+        "field_matches": {
+          "pledge_consumer.min_amount": false,
+          "pledge_consumer.max_years": true
+        },
+        "grounding_errors": [
+          "pledge_consumer.min_amount:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.008009599999695638
+    },
+    {
+      "id": "q17",
+      "case": {
+        "id": "q17",
+        "category": "multi",
+        "group": "pledge_consumer:amount_term",
+        "question": "个人质押类消费贷款最低金额和最长期限分别是多少？",
+        "gold": [
+          "pledge_consumer:p6",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "pledge_consumer:p5",
+        "pledge_consumer:p7",
+        "pledge_consumer:p8",
+        "pledge_consumer:p6",
+        "pledge_consumer:p20",
+        "pledge_consumer:p9"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "pledge_consumer",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "pledge_consumer",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.022770200000195473,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.min_amount": "1000元",
+          "pledge_consumer.max_years": "1年"
+        },
+        "evidence": {
+          "pledge_consumer.min_amount": [
+            "pledge_consumer:p6"
+          ],
+          "pledge_consumer.max_years": [
+            "pledge_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.min_amount": [
+            "贷款金额起点为1000元。"
+          ],
+          "pledge_consumer.max_years": [
+            "贷款期限最短为一个月（含），最长为一年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "pledge_consumer.min_amount": true,
+          "pledge_consumer.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006226800000149524
+    },
+    {
+      "id": "q17",
+      "case": {
+        "id": "q17",
+        "category": "multi",
+        "group": "pledge_consumer:amount_term",
+        "question": "个人质押类消费贷款最低金额和最长期限分别是多少？",
+        "gold": [
+          "pledge_consumer:p6",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "pledge_consumer.min_amount": "1000元",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "pledge_consumer:p6",
+        "pledge_consumer:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8000000636675395e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "pledge_consumer.min_amount": "1000元",
+          "pledge_consumer.max_years": "1年"
+        },
+        "evidence": {
+          "pledge_consumer.min_amount": [
+            "pledge_consumer:p6"
+          ],
+          "pledge_consumer.max_years": [
+            "pledge_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "pledge_consumer.min_amount": "贷款金额起点为1000元。",
+          "pledge_consumer.max_years": "贷款期限最短为一个月（含），最长为一年（含）。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "pledge_consumer.min_amount": true,
+          "pledge_consumer.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.00572020000026896
+    },
+    {
+      "id": "q18",
+      "case": {
+        "id": "q18",
+        "category": "multi",
+        "group": "e_loan:amount_term",
+        "question": "中银E贷最高金额和额度有效期上限分别是多少？注意额度期限与单笔期限的区别。",
+        "gold": [
+          "e_loan:p6",
+          "e_loan:p8"
+        ],
+        "expected": {
+          "e_loan.max_amount": "30万元",
+          "e_loan.credit_max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "e_loan:p8",
+        "suixin:p8",
+        "e_loan:p7",
+        "pledge_consumer:p7",
+        "suixin:p6",
+        "pledge_consumer:p8"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01846690000002127,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 1.0,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": [
+          "e_loan.max_amount"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "e_loan.max_amount": false,
+          "e_loan.credit_max_years": false
+        },
+        "grounding_errors": [
+          "e_loan.max_amount:wrong_source_for_expected_fact",
+          "e_loan.credit_max_years:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005378699999710079
+    },
+    {
+      "id": "q18",
+      "case": {
+        "id": "q18",
+        "category": "multi",
+        "group": "e_loan:amount_term",
+        "question": "中银E贷最高金额和额度有效期上限分别是多少？注意额度期限与单笔期限的区别。",
+        "gold": [
+          "e_loan:p6",
+          "e_loan:p8"
+        ],
+        "expected": {
+          "e_loan.max_amount": "30万元",
+          "e_loan.credit_max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "e_loan:p5",
+        "e_loan:p7",
+        "e_loan:p6",
+        "e_loan:p8",
+        "e_loan:p11",
+        "e_loan:p9"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "e_loan",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "e_loan",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.025036999999883847,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "e_loan.max_amount": "30万元",
+          "e_loan.credit_max_years": "1年"
+        },
+        "evidence": {
+          "e_loan.max_amount": [
+            "e_loan:p6"
+          ],
+          "e_loan.credit_max_years": [
+            "e_loan:p8"
+          ]
+        },
+        "quotes": {
+          "e_loan.max_amount": [
+            "贷款金额不超过30万元。"
+          ],
+          "e_loan.credit_max_years": [
+            "贷款额度期限最长不超过1年，额度有效期内可循环使用、随借随还。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "e_loan.max_amount": true,
+          "e_loan.credit_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.01117789999989327
+    },
+    {
+      "id": "q18",
+      "case": {
+        "id": "q18",
+        "category": "multi",
+        "group": "e_loan:amount_term",
+        "question": "中银E贷最高金额和额度有效期上限分别是多少？注意额度期限与单笔期限的区别。",
+        "gold": [
+          "e_loan:p6",
+          "e_loan:p8"
+        ],
+        "expected": {
+          "e_loan.max_amount": "30万元",
+          "e_loan.credit_max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "e_loan:p6",
+        "e_loan:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.99999976757681e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "e_loan.max_amount": "30万元",
+          "e_loan.credit_max_years": "1年"
+        },
+        "evidence": {
+          "e_loan.max_amount": [
+            "e_loan:p6"
+          ],
+          "e_loan.credit_max_years": [
+            "e_loan:p8"
+          ]
+        },
+        "quotes": {
+          "e_loan.max_amount": "贷款金额不超过30万元。",
+          "e_loan.credit_max_years": "贷款额度期限最长不超过1年，额度有效期内可循环使用、随借随还。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "e_loan.max_amount": true,
+          "e_loan.credit_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006049100000382168
+    },
+    {
+      "id": "q19",
+      "case": {
+        "id": "q19",
+        "category": "multi",
+        "group": "commercial_property:amount_term",
+        "question": "个人商业用房贷款金额最高占房价多少，最长借多少年？",
+        "gold": [
+          "commercial_property:p5",
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_ratio": "50%",
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "commercial_property:p6",
+        "commercial_property:p5",
+        "first_home:p16",
+        "commercial_property:p2",
+        "mortgage_consumer:p8",
+        "commercial_property:p3"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.014151200000014796,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "commercial_property.max_ratio": "50%",
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_ratio": [
+            "commercial_property:p5"
+          ],
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_ratio": [
+            "个人商业用房贷款额度最高为所购商业用房全部价款（个人二手商业用房执行评估价格与交易价格孰低原则）的50%。"
+          ],
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "commercial_property.max_ratio": true,
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.007226900000205205
+    },
+    {
+      "id": "q19",
+      "case": {
+        "id": "q19",
+        "category": "multi",
+        "group": "commercial_property:amount_term",
+        "question": "个人商业用房贷款金额最高占房价多少，最长借多少年？",
+        "gold": [
+          "commercial_property:p5",
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_ratio": "50%",
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "commercial_property:p17",
+        "commercial_property:p6",
+        "commercial_property:p25",
+        "commercial_property:p8",
+        "commercial_property:p21",
+        "commercial_property:p23"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "commercial_property",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "commercial_property",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.019362399999863555,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.5,
+      "answer": {
+        "status": "insufficient",
+        "facts": {
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年。"
+          ]
+        },
+        "missing": [
+          "commercial_property.max_ratio"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "commercial_property.max_ratio": false,
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [
+          "commercial_property.max_ratio:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005071600000064791
+    },
+    {
+      "id": "q19",
+      "case": {
+        "id": "q19",
+        "category": "multi",
+        "group": "commercial_property:amount_term",
+        "question": "个人商业用房贷款金额最高占房价多少，最长借多少年？",
+        "gold": [
+          "commercial_property:p5",
+          "commercial_property:p6"
+        ],
+        "expected": {
+          "commercial_property.max_ratio": "50%",
+          "commercial_property.max_years": "10年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "commercial_property:p5",
+        "commercial_property:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8000000636675395e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "commercial_property.max_ratio": "50%",
+          "commercial_property.max_years": "10年"
+        },
+        "evidence": {
+          "commercial_property.max_ratio": [
+            "commercial_property:p5"
+          ],
+          "commercial_property.max_years": [
+            "commercial_property:p6"
+          ]
+        },
+        "quotes": {
+          "commercial_property.max_ratio": [
+            "个人商业用房贷款额度最高为所购商业用房全部价款（个人二手商业用房执行评估价格与交易价格孰低原则）的50%"
+          ],
+          "commercial_property.max_years": [
+            "个人商业用房贷款期限最长为10年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "commercial_property.max_ratio": true,
+          "commercial_property.max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.005853600000136794
+    },
+    {
+      "id": "q20",
+      "case": {
+        "id": "q20",
+        "category": "multi",
+        "group": "first_home:amount_term",
+        "question": "按一手住房贷款说明页原文，其人民币最长期限和贷款比例上限分别是多少？保留监管变化时从其规定的限定。",
+        "gold": [
+          "first_home:p16",
+          "first_home:p20"
+        ],
+        "expected": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "first_home:p20",
+        "first_home:p16",
+        "first_home:p12",
+        "first_home:p5",
+        "first_home:p14",
+        "first_home:p10"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.016460400000141817,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "evidence": {
+          "first_home.rmb_max_years": [
+            "first_home:p16"
+          ],
+          "first_home.page_max_ratio": [
+            "first_home:p20"
+          ]
+        },
+        "quotes": {
+          "first_home.rmb_max_years": "人民币贷款最长期限不超过30年",
+          "first_home.page_max_ratio": "单笔贷款额度最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.rmb_max_years": true,
+          "first_home.page_max_ratio": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.015834499999982654
+    },
+    {
+      "id": "q20",
+      "case": {
+        "id": "q20",
+        "category": "multi",
+        "group": "first_home:amount_term",
+        "question": "按一手住房贷款说明页原文，其人民币最长期限和贷款比例上限分别是多少？保留监管变化时从其规定的限定。",
+        "gold": [
+          "first_home:p16",
+          "first_home:p20"
+        ],
+        "expected": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "first_home:p20",
+        "first_home:p16",
+        "first_home:p12",
+        "first_home:p5",
+        "first_home:p14",
+        "first_home:p10"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "reason": "no unambiguous product"
+      },
+      "retrieval_seconds": 0.01689890000034211,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "evidence": {
+          "first_home.rmb_max_years": [
+            "first_home:p16"
+          ],
+          "first_home.page_max_ratio": [
+            "first_home:p20"
+          ]
+        },
+        "quotes": {
+          "first_home.rmb_max_years": "人民币贷款最长期限不超过30年",
+          "first_home.page_max_ratio": "单笔贷款额度最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.rmb_max_years": true,
+          "first_home.page_max_ratio": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.005148499999904743
+    },
+    {
+      "id": "q20",
+      "case": {
+        "id": "q20",
+        "category": "multi",
+        "group": "first_home:amount_term",
+        "question": "按一手住房贷款说明页原文，其人民币最长期限和贷款比例上限分别是多少？保留监管变化时从其规定的限定。",
+        "gold": [
+          "first_home:p16",
+          "first_home:p20"
+        ],
+        "expected": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "first_home:p16",
+        "first_home:p20"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 2.4000000848900527e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.rmb_max_years": "30年",
+          "first_home.page_max_ratio": "70%"
+        },
+        "evidence": {
+          "first_home.rmb_max_years": [
+            "first_home:p16"
+          ],
+          "first_home.page_max_ratio": [
+            "first_home:p20"
+          ]
+        },
+        "quotes": {
+          "first_home.rmb_max_years": [
+            "人民币贷款最长期限不超过30年"
+          ],
+          "first_home.page_max_ratio": [
+            "单笔贷款额度最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.rmb_max_years": true,
+          "first_home.page_max_ratio": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006244000000151573
+    },
+    {
+      "id": "q26",
+      "case": {
+        "id": "q26",
+        "category": "compare",
+        "group": "compare:unsecured:e_loan:max_amount",
+        "question": "比较个人无抵质押消费贷款与中银E贷•互联网个人信用循环消费贷款的金额上限，分别列出，保留原文限定。",
+        "gold": [
+          "unsecured:p6",
+          "e_loan:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元",
+          "e_loan.max_amount": "30万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "e_loan:p5",
+        "e_loan:p2",
+        "e_loan:p3",
+        "e_loan:p6",
+        "e_loan:p7",
+        "e_loan:p16"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01705969999966328,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.25,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": false,
+          "e_loan.max_amount": false
+        },
+        "grounding_errors": [
+          "unsecured.max_amount:wrong_source_for_expected_fact",
+          "e_loan.max_amount:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0007996999997885723
+    },
+    {
+      "id": "q26",
+      "case": {
+        "id": "q26",
+        "category": "compare",
+        "group": "compare:unsecured:e_loan:max_amount",
+        "question": "比较个人无抵质押消费贷款与中银E贷•互联网个人信用循环消费贷款的金额上限，分别列出，保留原文限定。",
+        "gold": [
+          "unsecured:p6",
+          "e_loan:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元",
+          "e_loan.max_amount": "30万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "e_loan:p5",
+        "unsecured:p5",
+        "e_loan:p11",
+        "unsecured:p7",
+        "e_loan:p7",
+        "unsecured:p6"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "e_loan",
+            "query": "比较与的金额上限，分别列出，保留原文限定。 贷款金额"
+          },
+          {
+            "doc": "unsecured",
+            "query": "比较与的金额上限，分别列出，保留原文限定。 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.02791830000023765,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.16666666666666666,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": false,
+          "e_loan.max_amount": false
+        },
+        "grounding_errors": [
+          "unsecured.max_amount:wrong_source_for_expected_fact",
+          "e_loan.max_amount:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0020650000001296576
+    },
+    {
+      "id": "q26",
+      "case": {
+        "id": "q26",
+        "category": "compare",
+        "group": "compare:unsecured:e_loan:max_amount",
+        "question": "比较个人无抵质押消费贷款与中银E贷•互联网个人信用循环消费贷款的金额上限，分别列出，保留原文限定。",
+        "gold": [
+          "unsecured:p6",
+          "e_loan:p6"
+        ],
+        "expected": {
+          "unsecured.max_amount": "100万元",
+          "e_loan.max_amount": "30万元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "unsecured:p6",
+        "e_loan:p6"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.8999999156221747e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.max_amount": "不超过100万元",
+          "e_loan.max_amount": "不超过30万元"
+        },
+        "evidence": {
+          "unsecured.max_amount": [
+            "unsecured:p6"
+          ],
+          "e_loan.max_amount": [
+            "e_loan:p6"
+          ]
+        },
+        "quotes": {
+          "unsecured.max_amount": "贷款金额不超过100万元。",
+          "e_loan.max_amount": "贷款金额不超过30万元。"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.max_amount": false,
+          "e_loan.max_amount": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.004748800000015763
+    },
+    {
+      "id": "q29",
+      "case": {
+        "id": "q29",
+        "category": "compare",
+        "group": "compare:first_home:commercial_property:max_ratio",
+        "question": "比较个人一手房住房贷款与个人商业用房贷款的该说明页载明的贷款比例上限，分别列出，保留原文限定。",
+        "gold": [
+          "first_home:p20",
+          "commercial_property:p5"
+        ],
+        "expected": {
+          "first_home.max_ratio": "70%",
+          "commercial_property.max_ratio": "50%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "first_home:p6",
+        "first_home:p20",
+        "first_home:p3",
+        "first_home:p5",
+        "commercial_property:p3",
+        "first_home:p12"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01694019999968077,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.max_ratio": "最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定",
+          "commercial_property.max_ratio": "未载明"
+        },
+        "evidence": {
+          "first_home.max_ratio": [
+            "first_home:p20"
+          ],
+          "commercial_property.max_ratio": []
+        },
+        "quotes": {
+          "first_home.max_ratio": [
+            "单笔贷款额度最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定。"
+          ],
+          "commercial_property.max_ratio": []
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.max_ratio": false,
+          "commercial_property.max_ratio": false
+        },
+        "grounding_errors": [
+          "commercial_property.max_ratio:invalid_citation",
+          "commercial_property.max_ratio:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005618499999854976
+    },
+    {
+      "id": "q29",
+      "case": {
+        "id": "q29",
+        "category": "compare",
+        "group": "compare:first_home:commercial_property:max_ratio",
+        "question": "比较个人一手房住房贷款与个人商业用房贷款的该说明页载明的贷款比例上限，分别列出，保留原文限定。",
+        "gold": [
+          "first_home:p20",
+          "commercial_property:p5"
+        ],
+        "expected": {
+          "first_home.max_ratio": "70%",
+          "commercial_property.max_ratio": "50%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "commercial_property:p25",
+        "first_home:p5",
+        "commercial_property:p17",
+        "first_home:p19",
+        "commercial_property:p21",
+        "first_home:p12"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "commercial_property",
+            "query": "比较与的该说明页载明的贷款比例上限，分别列出，保留原文限定。 "
+          },
+          {
+            "doc": "first_home",
+            "query": "比较与的该说明页载明的贷款比例上限，分别列出，保留原文限定。 "
+          }
+        ]
+      },
+      "retrieval_seconds": 0.026560300000255666,
+      "recall": 0.0,
+      "complete": false,
+      "mrr": 0,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": [
+          "first_home.max_ratio",
+          "commercial_property.max_ratio"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "first_home.max_ratio": false,
+          "commercial_property.max_ratio": false
+        },
+        "grounding_errors": [
+          "first_home.max_ratio:wrong_source_for_expected_fact",
+          "commercial_property.max_ratio:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.01862310000024081
+    },
+    {
+      "id": "q29",
+      "case": {
+        "id": "q29",
+        "category": "compare",
+        "group": "compare:first_home:commercial_property:max_ratio",
+        "question": "比较个人一手房住房贷款与个人商业用房贷款的该说明页载明的贷款比例上限，分别列出，保留原文限定。",
+        "gold": [
+          "first_home:p20",
+          "commercial_property:p5"
+        ],
+        "expected": {
+          "first_home.max_ratio": "70%",
+          "commercial_property.max_ratio": "50%"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "first_home:p20",
+        "commercial_property:p5"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 2.3000002329354174e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.max_ratio": "最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定",
+          "commercial_property.max_ratio": "最高为所购商业用房全部价款（个人二手商业用房执行评估价格与交易价格孰低原则）的50%，若相关监管规定对个人商业用房贷款限额有所变化，则从其规定"
+        },
+        "evidence": {
+          "first_home.max_ratio": [
+            "first_home:p20"
+          ],
+          "commercial_property.max_ratio": [
+            "commercial_property:p5"
+          ]
+        },
+        "quotes": {
+          "first_home.max_ratio": "单笔贷款额度最高不超过所购住房价值的70%，若相关监管规定对个人住房贷款限额有所变化，则从其规定。",
+          "commercial_property.max_ratio": "个人商业用房贷款额度最高为所购商业用房全部价款（个人二手商业用房执行评估价格与交易价格孰低原则）的50%。若相关监管规定对个人商业用房贷款限额有所变化，则从其规定；"
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.max_ratio": false,
+          "commercial_property.max_ratio": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005623500000183412
+    },
+    {
+      "id": "q30",
+      "case": {
+        "id": "q30",
+        "category": "compare",
+        "group": "compare:suixin:pledge_consumer:max_years",
+        "question": "比较随心智贷与个人质押类消费贷款的期限上限（中银E贷仅比较额度期限；一手住房仅比较人民币），分别列出，保留原文限定。",
+        "gold": [
+          "suixin:p8",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "suixin.max_years": "5年",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "pledge_consumer:p7",
+        "pledge_consumer:p8",
+        "pledge_consumer:p2",
+        "mortgage_consumer:p7",
+        "e_loan:p8",
+        "unsecured:p7"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01984179999999469,
+      "recall": 0.5,
+      "complete": false,
+      "mrr": 0.5,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_years": false,
+          "pledge_consumer.max_years": false
+        },
+        "grounding_errors": [
+          "suixin.max_years:wrong_source_for_expected_fact",
+          "pledge_consumer.max_years:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0008603999999650114
+    },
+    {
+      "id": "q30",
+      "case": {
+        "id": "q30",
+        "category": "compare",
+        "group": "compare:suixin:pledge_consumer:max_years",
+        "question": "比较随心智贷与个人质押类消费贷款的期限上限（中银E贷仅比较额度期限；一手住房仅比较人民币），分别列出，保留原文限定。",
+        "gold": [
+          "suixin:p8",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "suixin.max_years": "5年",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p5",
+        "suixin:p7",
+        "pledge_consumer:p5",
+        "pledge_consumer:p7",
+        "e_loan:p5",
+        "e_loan:p7"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "suixin",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "suixin",
+            "query": "贷款期限"
+          },
+          {
+            "doc": "pledge_consumer",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "pledge_consumer",
+            "query": "贷款期限"
+          },
+          {
+            "doc": "e_loan",
+            "query": "贷款金额"
+          },
+          {
+            "doc": "e_loan",
+            "query": "贷款期限"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.05591899999990346,
+      "recall": 0.0,
+      "complete": false,
+      "mrr": 0,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_years": false,
+          "pledge_consumer.max_years": false
+        },
+        "grounding_errors": [
+          "suixin.max_years:wrong_source_for_expected_fact",
+          "pledge_consumer.max_years:wrong_source_for_expected_fact"
+        ],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0020749000000250817
+    },
+    {
+      "id": "q30",
+      "case": {
+        "id": "q30",
+        "category": "compare",
+        "group": "compare:suixin:pledge_consumer:max_years",
+        "question": "比较随心智贷与个人质押类消费贷款的期限上限（中银E贷仅比较额度期限；一手住房仅比较人民币），分别列出，保留原文限定。",
+        "gold": [
+          "suixin:p8",
+          "pledge_consumer:p8"
+        ],
+        "expected": {
+          "suixin.max_years": "5年",
+          "pledge_consumer.max_years": "1年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "suixin:p8",
+        "pledge_consumer:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.99999976757681e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "suixin.max_years": 5,
+          "pledge_consumer.max_years": 1
+        },
+        "evidence": {
+          "suixin.max_years": [
+            "suixin:p8"
+          ],
+          "pledge_consumer.max_years": [
+            "pledge_consumer:p8"
+          ]
+        },
+        "quotes": {
+          "suixin.max_years": [
+            "额度期限最长5年，单笔用款期限最长5年，单笔贷款到期日不得超过额度到期日。"
+          ],
+          "pledge_consumer.max_years": [
+            "贷款期限最短为一个月（含），最长为一年（含）。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "suixin.max_years": false,
+          "pledge_consumer.max_years": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.006113100000220584
+    },
+    {
+      "id": "q42",
+      "case": {
+        "id": "q42",
+        "category": "no_answer",
+        "group": "unknown:1",
+        "question": "个人抵押消费贷款的客服经理姓名是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "mortgage_consumer:p1",
+        "mortgage_consumer:p3",
+        "mortgage_consumer:p2",
+        "commercial_property:p1",
+        "first_home:p1",
+        "provident:p1"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01262010000027658,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.003212699999949109
+    },
+    {
+      "id": "q42",
+      "case": {
+        "id": "q42",
+        "category": "no_answer",
+        "group": "unknown:1",
+        "question": "个人抵押消费贷款的客服经理姓名是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "mortgage_consumer:p3",
+        "mortgage_consumer:p5",
+        "mortgage_consumer:p26",
+        "mortgage_consumer:p1",
+        "mortgage_consumer:p9",
+        "mortgage_consumer:p18"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "mortgage_consumer",
+            "query": "的客服经理姓名是什么？ "
+          }
+        ]
+      },
+      "retrieval_seconds": 0.010407299999769748,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.003380699999979697
+    },
+    {
+      "id": "q42",
+      "case": {
+        "id": "q42",
+        "category": "no_answer",
+        "group": "unknown:1",
+        "question": "个人抵押消费贷款的客服经理姓名是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.0999997357430402e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0045933999999761
+    },
+    {
+      "id": "q46",
+      "case": {
+        "id": "q46",
+        "category": "no_answer",
+        "group": "unknown:5",
+        "question": "个人消费类汽车贷款的指定车牌号是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "auto:p1",
+        "auto:p2",
+        "auto:p3",
+        "auto:p17",
+        "auto:p5",
+        "auto:p25"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.013452199999846925,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.005449599999792554
+    },
+    {
+      "id": "q46",
+      "case": {
+        "id": "q46",
+        "category": "no_answer",
+        "group": "unknown:5",
+        "question": "个人消费类汽车贷款的指定车牌号是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "auto:p3",
+        "auto:p9",
+        "auto:p7",
+        "auto:p5",
+        "auto:p1",
+        "auto:p23"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "auto",
+            "query": "的指定车牌号是什么？ "
+          }
+        ]
+      },
+      "retrieval_seconds": 0.011417600000186212,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.002373799999986659
+    },
+    {
+      "id": "q46",
+      "case": {
+        "id": "q46",
+        "category": "no_answer",
+        "group": "unknown:5",
+        "question": "个人消费类汽车贷款的指定车牌号是什么？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 9.99999883788405e-07,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0028319999996710976
+    },
+    {
+      "id": "q47",
+      "case": {
+        "id": "q47",
+        "category": "no_answer",
+        "group": "unknown:6",
+        "question": "国家助学贷款下一年度一定会上调到多少元？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "national_student:p2",
+        "national_student:p7",
+        "national_student:p3",
+        "national_student:p29",
+        "national_student:p26",
+        "national_student:p9"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.011614900000040507,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004942000000028202
+    },
+    {
+      "id": "q47",
+      "case": {
+        "id": "q47",
+        "category": "no_answer",
+        "group": "unknown:6",
+        "question": "国家助学贷款下一年度一定会上调到多少元？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "national_student:p7",
+        "national_student:p9",
+        "national_student:p20",
+        "national_student:p23",
+        "national_student:p11",
+        "national_student:p5"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "national_student",
+            "query": "下一年度一定会上调到多少元？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.011122399999749177,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004426200000125391
+    },
+    {
+      "id": "q47",
+      "case": {
+        "id": "q47",
+        "category": "no_answer",
+        "group": "unknown:6",
+        "question": "国家助学贷款下一年度一定会上调到多少元？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.3000003491470125e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004781399999956193
+    },
+    {
+      "id": "q48",
+      "case": {
+        "id": "q48",
+        "category": "no_answer",
+        "group": "unknown:7",
+        "question": "个人留学贷款每个申请人的最终获批利率是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "overseas_student:p11",
+        "overseas_student:p26",
+        "overseas_student:p28",
+        "overseas_student:p21",
+        "overseas_student:p35",
+        "overseas_student:p5"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01169690000006085,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.00683919999983118
+    },
+    {
+      "id": "q48",
+      "case": {
+        "id": "q48",
+        "category": "no_answer",
+        "group": "unknown:7",
+        "question": "个人留学贷款每个申请人的最终获批利率是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "overseas_student:p11",
+        "overseas_student:p12",
+        "overseas_student:p28",
+        "overseas_student:p23",
+        "overseas_student:p5",
+        "overseas_student:p13"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "overseas_student",
+            "query": "每个申请人的最终获批利率是多少？ 贷款利率"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.011188699999820528,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0027203999998164363
+    },
+    {
+      "id": "q48",
+      "case": {
+        "id": "q48",
+        "category": "no_answer",
+        "group": "unknown:7",
+        "question": "个人留学贷款每个申请人的最终获批利率是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.0999997357430402e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004822200000035082
+    },
+    {
+      "id": "q49",
+      "case": {
+        "id": "q49",
+        "category": "no_answer",
+        "group": "unknown:8",
+        "question": "个人住房公积金贷款在未指定城市时全国统一的额度数字是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "provident:p2",
+        "provident:p11",
+        "provident:p23",
+        "provident:p3",
+        "first_home:p14",
+        "provident:p1"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.01588050000009389,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.007128300000204035
+    },
+    {
+      "id": "q49",
+      "case": {
+        "id": "q49",
+        "category": "no_answer",
+        "group": "unknown:8",
+        "question": "个人住房公积金贷款在未指定城市时全国统一的额度数字是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "provident:p18",
+        "provident:p10",
+        "provident:p12",
+        "provident:p11",
+        "provident:p14",
+        "provident:p13"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "provident",
+            "query": "在未指定城市时全国统一的额度数字是多少？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.012338199999703647,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0008321000000250933
+    },
+    {
+      "id": "q49",
+      "case": {
+        "id": "q49",
+        "category": "no_answer",
+        "group": "unknown:8",
+        "question": "个人住房公积金贷款在未指定城市时全国统一的额度数字是多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.100000190490391e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004573100000015984
+    },
+    {
+      "id": "q50",
+      "case": {
+        "id": "q50",
+        "category": "no_answer",
+        "group": "unknown:9",
+        "question": "个人商业用房贷款下个月一定降息多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "commercial_property:p6",
+        "commercial_property:p31",
+        "commercial_property:p29",
+        "first_home:p16",
+        "commercial_property:p2",
+        "pledge_consumer:p8"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.011507600000186358,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.002320999999938067
+    },
+    {
+      "id": "q50",
+      "case": {
+        "id": "q50",
+        "category": "no_answer",
+        "group": "unknown:9",
+        "question": "个人商业用房贷款下个月一定降息多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "commercial_property:p6",
+        "commercial_property:p31",
+        "commercial_property:p30",
+        "commercial_property:p9",
+        "commercial_property:p23",
+        "commercial_property:p8"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "commercial_property",
+            "query": "下个月一定降息多少？ "
+          }
+        ]
+      },
+      "retrieval_seconds": 0.010444200000165438,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.0067684999999073625
+    },
+    {
+      "id": "q50",
+      "case": {
+        "id": "q50",
+        "category": "no_answer",
+        "group": "unknown:9",
+        "question": "个人商业用房贷款下个月一定降息多少？",
+        "gold": [],
+        "expected": {},
+        "status": "insufficient",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.2999998943996616e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "insufficient",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {},
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.004508900000018912
+    },
+    {
+      "id": "q51",
+      "case": {
+        "id": "q51",
+        "category": "distractor",
+        "group": "unsecured:guarantee",
+        "question": "个人无抵质押消费贷款采用什么担保方式？不要套用个人抵押消费贷款的条款。",
+        "gold": [
+          "unsecured:p16"
+        ],
+        "expected": {
+          "unsecured.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "unsecured:p2",
+        "unsecured:p17",
+        "unsecured:p3",
+        "unsecured:p16",
+        "unsecured:p15",
+        "unsecured:p10"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.014257499999985157,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.25,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.guarantee": "信用方式"
+        },
+        "evidence": {
+          "unsecured.guarantee": [
+            "unsecured:p16"
+          ]
+        },
+        "quotes": {
+          "unsecured.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.007167500000377913
+    },
+    {
+      "id": "q51",
+      "case": {
+        "id": "q51",
+        "category": "distractor",
+        "group": "unsecured:guarantee",
+        "question": "个人无抵质押消费贷款采用什么担保方式？不要套用个人抵押消费贷款的条款。",
+        "gold": [
+          "unsecured:p16"
+        ],
+        "expected": {
+          "unsecured.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "unsecured:p15",
+        "unsecured:p16",
+        "unsecured:p17",
+        "unsecured:p12",
+        "unsecured:p9",
+        "unsecured:p13"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "unsecured",
+            "query": "采用什么担保方式？ 担保方式"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.010961799999677169,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.guarantee": "信用方式"
+        },
+        "evidence": {
+          "unsecured.guarantee": [
+            "unsecured:p16"
+          ]
+        },
+        "quotes": {
+          "unsecured.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0173915999998826
+    },
+    {
+      "id": "q51",
+      "case": {
+        "id": "q51",
+        "category": "distractor",
+        "group": "unsecured:guarantee",
+        "question": "个人无抵质押消费贷款采用什么担保方式？不要套用个人抵押消费贷款的条款。",
+        "gold": [
+          "unsecured:p16"
+        ],
+        "expected": {
+          "unsecured.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "unsecured:p16"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.4000002011016477e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "unsecured.guarantee": "信用方式"
+        },
+        "evidence": {
+          "unsecured.guarantee": [
+            "unsecured:p16"
+          ]
+        },
+        "quotes": {
+          "unsecured.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "unsecured.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.007385600000361592
+    },
+    {
+      "id": "q52",
+      "case": {
+        "id": "q52",
+        "category": "distractor",
+        "group": "mortgage_consumer:guarantee",
+        "question": "个人抵押消费贷款采用什么担保方式？不要用无抵质押消费贷款的规则。",
+        "gold": [
+          "mortgage_consumer:p16"
+        ],
+        "expected": {
+          "mortgage_consumer.guarantee": "抵押"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "mortgage_consumer:p16",
+        "mortgage_consumer:p17",
+        "unsecured:p17",
+        "mortgage_consumer:p2",
+        "mortgage_consumer:p3",
+        "unsecured:p16"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.013346700000056444,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.guarantee": "抵押担保"
+        },
+        "evidence": {
+          "mortgage_consumer.guarantee": [
+            "mortgage_consumer:p16"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.guarantee": [
+            "采用抵押担保方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005434400000012829
+    },
+    {
+      "id": "q52",
+      "case": {
+        "id": "q52",
+        "category": "distractor",
+        "group": "mortgage_consumer:guarantee",
+        "question": "个人抵押消费贷款采用什么担保方式？不要用无抵质押消费贷款的规则。",
+        "gold": [
+          "mortgage_consumer:p16"
+        ],
+        "expected": {
+          "mortgage_consumer.guarantee": "抵押"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "mortgage_consumer:p15",
+        "mortgage_consumer:p16",
+        "mortgage_consumer:p17",
+        "mortgage_consumer:p13",
+        "mortgage_consumer:p3",
+        "mortgage_consumer:p14"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "mortgage_consumer",
+            "query": "采用什么担保方式？ 担保方式"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.010254700000132289,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.5,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.guarantee": "抵押担保"
+        },
+        "evidence": {
+          "mortgage_consumer.guarantee": [
+            "mortgage_consumer:p16"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.guarantee": [
+            "采用抵押担保方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005270800000289455
+    },
+    {
+      "id": "q52",
+      "case": {
+        "id": "q52",
+        "category": "distractor",
+        "group": "mortgage_consumer:guarantee",
+        "question": "个人抵押消费贷款采用什么担保方式？不要用无抵质押消费贷款的规则。",
+        "gold": [
+          "mortgage_consumer:p16"
+        ],
+        "expected": {
+          "mortgage_consumer.guarantee": "抵押"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "mortgage_consumer:p16"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.500000053056283e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "mortgage_consumer.guarantee": "抵押担保"
+        },
+        "evidence": {
+          "mortgage_consumer.guarantee": [
+            "mortgage_consumer:p16"
+          ]
+        },
+        "quotes": {
+          "mortgage_consumer.guarantee": [
+            "采用抵押担保方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "mortgage_consumer.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.004802699999800097
+    },
+    {
+      "id": "q54",
+      "case": {
+        "id": "q54",
+        "category": "distractor",
+        "group": "e_loan:guarantee",
+        "question": "中银E贷采用什么担保方式？不要混入汽车贷款的要求。",
+        "gold": [
+          "e_loan:p16"
+        ],
+        "expected": {
+          "e_loan.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "auto:p16",
+        "auto:p17",
+        "e_loan:p16",
+        "auto:p3",
+        "e_loan:p15",
+        "auto:p18"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.013247599999886006,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "e_loan.guarantee": "信用方式"
+        },
+        "evidence": {
+          "e_loan.guarantee": [
+            "e_loan:p16"
+          ]
+        },
+        "quotes": {
+          "e_loan.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "e_loan.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.007897699999830365
+    },
+    {
+      "id": "q54",
+      "case": {
+        "id": "q54",
+        "category": "distractor",
+        "group": "e_loan:guarantee",
+        "question": "中银E贷采用什么担保方式？不要混入汽车贷款的要求。",
+        "gold": [
+          "e_loan:p16"
+        ],
+        "expected": {
+          "e_loan.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "e_loan:p15",
+        "e_loan:p17",
+        "e_loan:p16",
+        "e_loan:p13",
+        "e_loan:p9",
+        "e_loan:p2"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "e_loan",
+            "query": "采用什么担保方式？ 担保方式"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.011201899999832676,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 0.3333333333333333,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "e_loan.guarantee": "信用方式"
+        },
+        "evidence": {
+          "e_loan.guarantee": [
+            "e_loan:p16"
+          ]
+        },
+        "quotes": {
+          "e_loan.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "e_loan.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005411699999967823
+    },
+    {
+      "id": "q54",
+      "case": {
+        "id": "q54",
+        "category": "distractor",
+        "group": "e_loan:guarantee",
+        "question": "中银E贷采用什么担保方式？不要混入汽车贷款的要求。",
+        "gold": [
+          "e_loan:p16"
+        ],
+        "expected": {
+          "e_loan.guarantee": "信用"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "e_loan:p16"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.5999999050109182e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "e_loan.guarantee": "信用方式"
+        },
+        "evidence": {
+          "e_loan.guarantee": [
+            "e_loan:p16"
+          ]
+        },
+        "quotes": {
+          "e_loan.guarantee": [
+            "采用信用方式。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "e_loan.guarantee": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005430299999716226
+    },
+    {
+      "id": "q56",
+      "case": {
+        "id": "q56",
+        "category": "distractor",
+        "group": "national_student:postgrad_annual",
+        "question": "国家助学贷款研究生每年上限是多少元？不要使用本专科生的额度。",
+        "gold": [
+          "national_student:p8"
+        ],
+        "expected": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "national_student:p8",
+        "national_student:p6",
+        "national_student:p7",
+        "national_student:p21",
+        "national_student:p2",
+        "national_student:p10"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.014003599999796279,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "evidence": {
+          "national_student.postgrad_annual": [
+            "national_student:p8"
+          ]
+        },
+        "quotes": {
+          "national_student.postgrad_annual": [
+            "全日制研究生每人每年申请贷款额度不超过25000元"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "national_student.postgrad_annual": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.015417200000229059
+    },
+    {
+      "id": "q56",
+      "case": {
+        "id": "q56",
+        "category": "distractor",
+        "group": "national_student:postgrad_annual",
+        "question": "国家助学贷款研究生每年上限是多少元？不要使用本专科生的额度。",
+        "gold": [
+          "national_student:p8"
+        ],
+        "expected": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "national_student:p8",
+        "national_student:p6",
+        "national_student:p7",
+        "national_student:p9",
+        "national_student:p18",
+        "national_student:p24"
+      ],
+      "plan": {
+        "policy": "decomposed",
+        "budget": 6,
+        "branches": [
+          {
+            "doc": "national_student",
+            "query": "研究生每年上限是多少元？ 贷款金额"
+          }
+        ]
+      },
+      "retrieval_seconds": 0.010500699999738572,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "evidence": {
+          "national_student.postgrad_annual": [
+            "national_student:p8"
+          ]
+        },
+        "quotes": {
+          "national_student.postgrad_annual": [
+            "全日制研究生每人每年申请贷款额度不超过25000元"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "national_student.postgrad_annual": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006813299999976152
+    },
+    {
+      "id": "q56",
+      "case": {
+        "id": "q56",
+        "category": "distractor",
+        "group": "national_student:postgrad_annual",
+        "question": "国家助学贷款研究生每年上限是多少元？不要使用本专科生的额度。",
+        "gold": [
+          "national_student:p8"
+        ],
+        "expected": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "national_student:p8"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.500000053056283e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "national_student.postgrad_annual": "25000元"
+        },
+        "evidence": {
+          "national_student.postgrad_annual": [
+            "national_student:p8"
+          ]
+        },
+        "quotes": {
+          "national_student.postgrad_annual": [
+            "全日制研究生每人每年申请贷款额度不超过25000元"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "national_student.postgrad_annual": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.00645329999997557
+    },
+    {
+      "id": "q58",
+      "case": {
+        "id": "q58",
+        "category": "distractor",
+        "group": "first_home:fx_max_years",
+        "question": "个人一手住房的外币贷款最长期限多少年？不是人民币期限。",
+        "gold": [
+          "first_home:p16"
+        ],
+        "expected": {
+          "first_home.fx_max_years": "8年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "first_home:p16",
+        "provident:p11",
+        "mortgage_consumer:p8",
+        "first_home:p14",
+        "unsecured:p8",
+        "first_home:p4"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.012819900000067719,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.fx_max_years": "8年"
+        },
+        "evidence": {
+          "first_home.fx_max_years": [
+            "first_home:p16"
+          ]
+        },
+        "quotes": {
+          "first_home.fx_max_years": [
+            "外币个人住房贷款最长期限不超过8年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.fx_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.009219100000336766
+    },
+    {
+      "id": "q58",
+      "case": {
+        "id": "q58",
+        "category": "distractor",
+        "group": "first_home:fx_max_years",
+        "question": "个人一手住房的外币贷款最长期限多少年？不是人民币期限。",
+        "gold": [
+          "first_home:p16"
+        ],
+        "expected": {
+          "first_home.fx_max_years": "8年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "first_home:p16",
+        "provident:p11",
+        "mortgage_consumer:p8",
+        "first_home:p14",
+        "unsecured:p8",
+        "first_home:p4"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "reason": "no unambiguous product"
+      },
+      "retrieval_seconds": 0.014267799999743147,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.fx_max_years": "8年"
+        },
+        "evidence": {
+          "first_home.fx_max_years": [
+            "first_home:p16"
+          ]
+        },
+        "quotes": {
+          "first_home.fx_max_years": [
+            "外币个人住房贷款最长期限不超过8年。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.fx_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.002833499999724154
+    },
+    {
+      "id": "q58",
+      "case": {
+        "id": "q58",
+        "category": "distractor",
+        "group": "first_home:fx_max_years",
+        "question": "个人一手住房的外币贷款最长期限多少年？不是人民币期限。",
+        "gold": [
+          "first_home:p16"
+        ],
+        "expected": {
+          "first_home.fx_max_years": "8年"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [
+        "first_home:p16"
+      ],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.2999998943996616e-06,
+      "recall": 1.0,
+      "complete": true,
+      "mrr": 1.0,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "first_home.fx_max_years": "8年"
+        },
+        "evidence": {
+          "first_home.fx_max_years": [
+            "first_home:p16"
+          ]
+        },
+        "quotes": {
+          "first_home.fx_max_years": [
+            "外币个人住房贷款最长期限不超过8年"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "first_home.fx_max_years": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.009436700000151177
+    },
+    {
+      "id": "q61",
+      "case": {
+        "id": "q61",
+        "category": "calculation",
+        "group": "calc:0",
+        "question": "使用等额本息公式计算：本金100000元，合同年利率4%，期限24个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4342.49元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 100000,
+          "annual_rate": 4,
+          "term_months": 24
+        },
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "pledge_consumer:p11",
+        "mortgage_consumer:p14",
+        "unsecured:p11",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.023202699999728793,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "4342.49元"
+        },
+        "evidence": {
+          "monthly_payment": []
+        },
+        "quotes": {
+          "monthly_payment": []
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.01267039999993358
+    },
+    {
+      "id": "q61",
+      "case": {
+        "id": "q61",
+        "category": "calculation",
+        "group": "calc:0",
+        "question": "使用等额本息公式计算：本金100000元，合同年利率4%，期限24个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4342.49元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 100000,
+          "annual_rate": 4,
+          "term_months": 24
+        },
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "pledge_consumer:p11",
+        "mortgage_consumer:p14",
+        "unsecured:p11",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "reason": "no unambiguous product"
+      },
+      "retrieval_seconds": 0.022275700000136567,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "4342.49元"
+        },
+        "evidence": {},
+        "quotes": {},
+        "missing": [],
+        "tool": {
+          "name": "monthly_payment",
+          "arguments": {
+            "principal": 100000.0,
+            "annual_rate": 4.0,
+            "term_months": 24.0
+          }
+        }
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.009697599999981321
+    },
+    {
+      "id": "q61",
+      "case": {
+        "id": "q61",
+        "category": "calculation",
+        "group": "calc:0",
+        "question": "使用等额本息公式计算：本金100000元，合同年利率4%，期限24个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4342.49元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 100000,
+          "annual_rate": 4,
+          "term_months": 24
+        },
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.0999997357430402e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "clarify",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": [
+          "annual_rate"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "monthly_payment": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.02164889999994557
+    },
+    {
+      "id": "q63",
+      "case": {
+        "id": "q63",
+        "category": "calculation",
+        "group": "calc:2",
+        "question": "使用等额本息公式计算：本金50000元，合同年利率0%，期限12个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4166.67元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 50000,
+          "annual_rate": 0,
+          "term_months": 12
+        },
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "suixin:p6",
+        "pledge_consumer:p14",
+        "mortgage_consumer:p14",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.022286299999905168,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "4166.67元"
+        },
+        "evidence": {
+          "monthly_payment": [
+            "suixin:p14"
+          ]
+        },
+        "quotes": {
+          "monthly_payment": [
+            "可采用按月等额本息的还款方式"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006142600000202947
+    },
+    {
+      "id": "q63",
+      "case": {
+        "id": "q63",
+        "category": "calculation",
+        "group": "calc:2",
+        "question": "使用等额本息公式计算：本金50000元，合同年利率0%，期限12个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4166.67元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 50000,
+          "annual_rate": 0,
+          "term_months": 12
+        },
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "suixin:p6",
+        "pledge_consumer:p14",
+        "mortgage_consumer:p14",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "reason": "no unambiguous product"
+      },
+      "retrieval_seconds": 0.02222189999974944,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "4166.67元"
+        },
+        "evidence": {},
+        "quotes": {},
+        "missing": [],
+        "tool": {
+          "name": "monthly_payment",
+          "arguments": {
+            "principal": 50000.0,
+            "annual_rate": 0.0,
+            "term_months": 12.0
+          }
+        }
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.008508500000061758
+    },
+    {
+      "id": "q63",
+      "case": {
+        "id": "q63",
+        "category": "calculation",
+        "group": "calc:2",
+        "question": "使用等额本息公式计算：本金50000元，合同年利率0%，期限12个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "4166.67元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 50000,
+          "annual_rate": 0,
+          "term_months": 12
+        },
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.4000002011016477e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": 4166.67
+        },
+        "evidence": {
+          "monthly_payment": []
+        },
+        "quotes": {
+          "monthly_payment": []
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.0061491000001296925
+    },
+    {
+      "id": "q65",
+      "case": {
+        "id": "q65",
+        "category": "calculation",
+        "group": "calc:4",
+        "question": "使用等额本息公式计算：本金120000元，合同年利率5%，期限60个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "2264.55元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 120000,
+          "annual_rate": 5,
+          "term_months": 60
+        },
+        "split": "dev"
+      },
+      "policy": "baseline",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "suixin:p6",
+        "pledge_consumer:p11",
+        "mortgage_consumer:p14",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "budget": 6
+      },
+      "retrieval_seconds": 0.022524299999986397,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": 2264.55
+        },
+        "evidence": {
+          "monthly_payment": [
+            "suixin:p14"
+          ]
+        },
+        "quotes": {
+          "monthly_payment": [
+            "贷款期限不超过3年的，可采用按月还息到期还本、按月等额本息的还款方式；贷款期限超过3年的，可采用按月等额本息、等额本金。"
+          ]
+        },
+        "missing": []
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005730200000016339
+    },
+    {
+      "id": "q65",
+      "case": {
+        "id": "q65",
+        "category": "calculation",
+        "group": "calc:4",
+        "question": "使用等额本息公式计算：本金120000元，合同年利率5%，期限60个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "2264.55元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 120000,
+          "annual_rate": 5,
+          "term_months": 60
+        },
+        "split": "dev"
+      },
+      "policy": "decomposed",
+      "hits": [
+        "suixin:p14",
+        "auto:p14",
+        "suixin:p6",
+        "pledge_consumer:p11",
+        "mortgage_consumer:p14",
+        "unsecured:p14"
+      ],
+      "plan": {
+        "policy": "baseline",
+        "reason": "no unambiguous product"
+      },
+      "retrieval_seconds": 0.021634000000176457,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "answered",
+        "facts": {
+          "monthly_payment": "2264.55元"
+        },
+        "evidence": {},
+        "quotes": {},
+        "missing": [],
+        "tool": {
+          "name": "monthly_payment",
+          "arguments": {
+            "principal": 120000.0,
+            "annual_rate": 5.0,
+            "term_months": 60.0
+          }
+        }
+      },
+      "grade": {
+        "status_ok": true,
+        "missing_ok": true,
+        "field_matches": {
+          "monthly_payment": true
+        },
+        "grounding_errors": [],
+        "automated_pass": true
+      },
+      "generation_seconds": 0.006313700000191602
+    },
+    {
+      "id": "q65",
+      "case": {
+        "id": "q65",
+        "category": "calculation",
+        "group": "calc:4",
+        "question": "使用等额本息公式计算：本金120000元，合同年利率5%，期限60个月。输出monthly_payment，单位元，四舍五入保留两位小数。这里利率已明确给出，不需查询产品利率。",
+        "gold": [],
+        "expected": {
+          "monthly_payment": "2264.55元"
+        },
+        "status": "answered",
+        "missing": [],
+        "label_review": "AI checked against downloaded source; no human review",
+        "calculation": {
+          "principal": 120000,
+          "annual_rate": 5,
+          "term_months": 60
+        },
+        "split": "dev"
+      },
+      "policy": "oracle",
+      "hits": [],
+      "plan": {
+        "policy": "oracle",
+        "note": "diagnostic only; not a deployable retrieval policy"
+      },
+      "retrieval_seconds": 1.4000002011016477e-06,
+      "recall": null,
+      "complete": null,
+      "mrr": null,
+      "answer": {
+        "status": "clarify",
+        "facts": {},
+        "evidence": {},
+        "quotes": {},
+        "missing": [
+          "annual_rate"
+        ]
+      },
+      "grade": {
+        "status_ok": false,
+        "missing_ok": false,
+        "field_matches": {
+          "monthly_payment": false
+        },
+        "grounding_errors": [],
+        "automated_pass": false
+      },
+      "generation_seconds": 0.005900600000131817
+    }
+  ]
+}

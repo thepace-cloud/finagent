@@ -1,0 +1,10 @@
+# Preserve original downloaded HTML bytes and hashes across Windows checkouts.
+raw/*.html -text -diff
+*.py text eol=lf
+*.json text eol=lf
+*.sha256 text eol=lf
+*.md text eol=lf
+raw/*.txt text eol=lf
+cases_v2.json -text -eol -diff
+sources.json -text -eol -diff
+passages.json -text -eol -diff

@@ -1,0 +1,41 @@
+{
+  "selected": "decomposed",
+  "selection_data": "dev only",
+  "dev_metrics": {
+    "baseline": {
+      "evidence_complete": 19,
+      "retrieval_tasks": 21,
+      "macro_recall": 0.9523809523809523,
+      "mrr": 0.9325396825396824,
+      "automated_pass": 28,
+      "tasks": 30,
+      "api_errors": 0
+    },
+    "decomposed": {
+      "evidence_complete": 21,
+      "retrieval_tasks": 21,
+      "macro_recall": 1.0,
+      "mrr": 0.9523809523809523,
+      "automated_pass": 29,
+      "tasks": 30,
+      "api_errors": 0
+    },
+    "oracle": {
+      "evidence_complete": 21,
+      "retrieval_tasks": 21,
+      "macro_recall": 1.0,
+      "mrr": 1.0,
+      "automated_pass": 28,
+      "tasks": 30,
+      "api_errors": 0
+    }
+  },
+  "frozen_before_test": true,
+  "hashes": {
+    "engine.py": "27199482cdb290bfc5268247b05022163931a8cafcca6749014d9b44d1fd3300",
+    "evaluate.py": "f6b74adc5d42b6bd740f09d011e5b41168166268720887498f15de5f68dd805b",
+    "cases_v2.json": "5dc62d98a097b01efea4d891652b7be0d182bc3d1df3f2de41efa09df0f3acdb",
+    "sources.json": "915a2dc4f773d720f33ba2b2826573127a787e1acf6be504b36a7b2f6d8b85ae",
+    "passages.json": "c37adff38c9ddef0fe7e518a18d4b95d20fad0cb7a549144551e3f4ffda84561"
+  }
+}
